@@ -1,28 +1,34 @@
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  
 }
 
+
 .header {
-  align-items: center;
     width: 100%;
-    padding: 24px 60px; 
     display: flex;
-    padding: 20px 63px 20px 48px;
-    justify-content: center;
+    justify-content: space-between; 
     align-items: center;
-    gap: 289px;
+    padding: 20px 63px 20px 48px;
+    background-color: #ffffff;
+}
+
+.header__logo {
+    height: auto;
+    max-width: 180px; 
+}
+
+
+.header__toggle {
+    display: none;
 }
 
 .header__menu {
     list-style: none;
     margin: 0;
-    padding: 0;
-    display: flex;
     padding: 0 60px;
+    display: flex;
     justify-content: center;
     align-items: center;
     gap: 25px;
@@ -31,24 +37,95 @@
 
 .header__item {
     display: flex;
-  padding: 12px 20px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+    padding: 12px 20px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 .header__link {
     text-decoration: none;
     color: #000;
-    font-family: Inter;
+    font-family: 'Inter', sans-serif;
     font-size: 20px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
 }
 
-
 .header__link--active {
   font-weight: 800;
   color: #3960AB;
+}
+
+
+
+@media (min-width: 769px) {
+    .header {
+        
+        gap: 289px; 
+    }
+}
+
+
+
+@media (max-width: 768px) {
+    .header {
+        padding: 15px 20px; 
+        position: relative;
+        z-index: 100;
+    }
+
+    
+    .header__toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 28px;
+        height: 20px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .header__toggle-line {
+        width: 100%;
+        height: 3px;
+        background-color: #000000; 
+        border-radius: 2px;
+    }
+
+    
+    .header__nav {
+        display: none;
+        position: absolute;
+        top: 100%; 
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); 
+        z-index: 99;
+    }
+
+   
+    .header__nav--open {
+        display: block;
+    }
+
+    
+    .header__menu {
+        flex-direction: column;
+        padding: 20px 0;
+        gap: 10px;
+    }
+
+    .header__item {
+        width: 100%;
+        padding: 12px 0;
+        justify-content: center;
+    }
+
+    .header__link {
+        font-size: 18px; 
+    }
 }
