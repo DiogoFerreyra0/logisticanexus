@@ -124,86 +124,89 @@
 
       
                   <form id="form-clientes" class="nexus-form active">
-                      <div class="form-group">
-                          <label for="empresa-name">Empresa o pagina web</label>
-                          <input type="text" id="empresa-name" placeholder="Nombre de tu marca" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="cliente-fullname">Nombre completo</label>
-                          <input type="text" id="cliente-fullname" placeholder="Nombre y apellido" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="cliente-phone">Teléfono (WhatsApp)</label>
-                          <input type="tel" id="cliente-phone" placeholder="EJ:11 1234-5678" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="cliente-email">Email</label>
-                          <input type="email" id="cliente-email" placeholder="nombre@correo.com" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="select-envios">Cantidad de envíos mensuales</label>
-                          <select id="select-envios" required>
-                              <option value="" disabled selected hidden>Menos de 100 envios</option>
-                              <option value="Menos de 100 envíos">Menos de 100 envíos</option>
-                              <option value="Entre 100 y 600 envíos">Entre 100 y 600 envíos</option>
-                              <option value="Más de 600 envíos">Más de 600 envíos</option>
-                              <option value="Más de 2.000 envíos">Más de 2.000 envíos</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label for="select-bulto">Tamaño de bulto</label>
-                          <select id="select-bulto" required>
-                              <option value="" disabled selected hidden>Chico (Ej Caja de Celular)</option>
-                              <option value="Chico">Chico (Ej Caja de Celular)</option>
-                              <option value="Mediano">Mediano (Ej. Caja de zapatos)</option>
-                              <option value="Grande">Grande (Ej. Televisor)</option>
-                              <option value="Muy grande">Muy grande (Ej. Cocina) - NO PODEMOS AYUDARTE</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label for="cliente-msg">Mensaje</label>
-                          <textarea id="cliente-msg" rows="3" placeholder="Contanos que necesitas despachar..." required></textarea>
-                      </div>
-                      <button type="submit" class="btn-submit">ENVIAR SOLICITUD</button>
-                  </form>
+    <input type="hidden" name="form_type" value="clientes">
 
-           
-                  <form id="form-choferes" class="nexus-form">
-                      <div class="form-group">
-                          <label for="chofer-fullname">Nombre Completo</label>
-                          <input type="text" id="chofer-fullname" placeholder="Nombre y apellido" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="chofer-phone">Teléfono (WhatsApp)</label>
-                          <input type="tel" id="chofer-phone" placeholder="Ej: 11 1234 5678" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="chofer-email">Email</label>
-                          <input type="email" id="chofer-email" placeholder="tu-email@gmail.com" required>
-                      </div>
-                      <div class="form-group">
-                          <label for="select-vehiculo">Tipo de Vehículo / Unidad:</label>
-                          <select id="select-vehiculo" required>
-                              <option value="Utilitario Chico">Auto / Utilitario Chico</option>
-                              <option value="Utilitario Mediano (Fiorino/Kangoo)">Fiorino / Kangoo (Utilitario Mediano)</option>
-                              <option value="Furgón Grande (Sprinter/Master)">Furgón Grande (Sprinter/Master)</option>
-                              <option value="Camión Chasis / Playo">Camión Chasis / Playo</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label for="select-cobertura">Zona de Cobertura Principal:</label>
-                          <select id="select-cobertura" required>
-                              <option value="AMBA">AMBA (Capital y Gran Buenos Aires)</option>
-                              <option value="Entre Ríos">Entre Ríos (Base Gualeguaychú)</option>
-                              <option value="Larga Distancia">Rutas de Larga Distancia</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label for="chofer-msg">Contanos sobre tu experiencia o equipo de trabajo</label>
-                          <textarea id="chofer-msg" rows="3" placeholder="Modelo del vehículo, si tenés monotributo, etc." required></textarea>
-                      </div>
-                      <button type="submit" class="btn-submit">POSTULAR MI UNIDAD</button>
-                  </form>
+    <div class="form-group">
+        <label for="empresa-name">Empresa o pagina web</label>
+        <input type="text" id="empresa-name" name="empresa_name" placeholder="Nombre de tu marca" required>
+    </div>
+    <div class="form-group">
+        <label for="cliente-fullname">Nombre completo</label>
+        <input type="text" id="cliente-fullname" name="cliente_fullname" placeholder="Nombre y apellido" required>
+    </div>
+    <div class="form-group">
+        <label for="cliente-phone">Teléfono (WhatsApp)</label>
+        <input type="tel" id="cliente-phone" name="cliente_phone" placeholder="EJ:11 1234-5678" required>
+    </div>
+    <div class="form-group">
+        <label for="cliente-email">Email</label>
+        <input type="email" id="cliente-email" name="cliente_email" placeholder="nombre@correo.com" required>
+    </div>
+    <div class="form-group">
+        <label for="select-envios">Cantidad de envíos mensuales</label>
+        <select id="select-envios" name="select_envios" required>
+            <option value="" disabled selected hidden>Menos de 100 envios</option>
+            <option value="Menos de 100 envíos">Menos de 100 envíos</option>
+            <option value="Entre 100 y 600 envíos">Entre 100 y 600 envíos</option>
+            <option value="Más de 600 envíos">Más de 600 envíos</option>
+            <option value="Más de 2.000 envíos">Más de 2.000 envíos</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="select-bulto">Tamaño de bulto</label>
+        <select id="select-bulto" name="select_bulto" required>
+            <option value="" disabled selected hidden>Chico (Ej Caja de Celular)</option>
+            <option value="Chico">Chico (Ej Caja de Celular)</option>
+            <option value="Mediano">Mediano (Ej. Caja de zapatos)</option>
+            <option value="Grande">Grande (Ej. Televisor)</option>
+            <option value="Muy grande">Muy grande (Ej. Cocina) - NO PODEMOS AYUDARTE</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="cliente-msg">Mensaje</label>
+        <textarea id="cliente-msg" name="cliente_msg" rows="3" placeholder="Contanos que necesitas despachar..." required></textarea>
+    </div>
+    <button type="submit" class="btn-submit">ENVIAR SOLICITUD</button>
+</form>
+
+<form id="form-choferes" class="nexus-form">
+    <input type="hidden" name="form_type" value="choferes">
+
+    <div class="form-group">
+        <label for="chofer-fullname">Nombre Completo</label>
+        <input type="text" id="chofer-fullname" name="chofer_fullname" placeholder="Nombre y apellido" required>
+    </div>
+    <div class="form-group">
+        <label for="chofer-phone">Teléfono (WhatsApp)</label>
+        <input type="tel" id="chofer-phone" name="chofer_phone" placeholder="Ej: 11 1234 5678" required>
+    </div>
+    <div class="form-group">
+        <label for="chofer-email">Email</label>
+        <input type="email" id="chofer-email" name="chofer_email" placeholder="tu-email@gmail.com" required>
+    </div>
+    <div class="form-group">
+        <label for="select-vehiculo">Tipo de Vehículo / Unidad:</label>
+        <select id="select-vehiculo" name="select_vehiculo" required>
+            <option value="Utilitario Chico">Auto / Utilitario Chico</option>
+            <option value="Utilitario Mediano (Fiorino/Kangoo)">Fiorino / Kangoo (Utilitario Mediano)</option>
+            <option value="Furgón Grande (Sprinter/Master)">Furgón Grande (Sprinter/Master)</option>
+            <option value="Camión Chasis / Playo">Camión Chasis / Playo</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="select-cobertura">Zona de Cobertura Principal:</label>
+        <select id="select-cobertura" name="select_cobertura" required>
+            <option value="AMBA">AMBA (Capital y Gran Buenos Aires)</option>
+            <option value="Entre Ríos">Entre Ríos (Base Gualeguaychú)</option>
+            <option value="Larga Distancia">Rutas de Larga Distancia</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="chofer-msg">Contanos sobre tu experiencia o equipo de trabajo</label>
+        <textarea id="chofer-msg" name="chofer_msg" rows="3" placeholder="Modelo del vehículo, si tenés monotributo, etc." required></textarea>
+    </div>
+    <button type="submit" class="btn-submit">POSTULAR MI UNIDAD</button>
+</form>
 
               </div>
 
