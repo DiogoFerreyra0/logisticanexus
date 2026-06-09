@@ -223,46 +223,46 @@
   margin: 0;
 }
 
-/* ==========================================================================
-   Estilos de la Sección de Contacto 
-   ========================================================================== */
+
 
 .hero-contact {
   background: linear-gradient(rgba(24, 39, 70, 0.75), rgba(24, 39, 70, 0.75)), 
               url('./img/Fondo\ hero\ inicio.png'); 
   background-size: cover;
   background-position: center;
-  padding: 70px 95px;
+  padding: 90px 95px; 
   color: #ffffff;
   text-align: center;
 }
 
 .hero-contact__title {
-  font-size: 36px;
+  font-size: 46px; 
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .hero-contact__text {
-  font-size: 16px;
+  font-size: 18px; 
   color: #e5e7eb;
-  max-width: 600px;
+  max-width: 650px;
   margin: 0 auto;
+  line-height: 1.6;
 }
 
 .contact-section {
-  padding: 80px 95px;
+  padding: 90px 95px;
   background-color: #ffffff;
 }
 
 .contact-section__container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
+  gap: 90px; 
   max-width: 1440px;
   margin: 0 auto;
   align-items: start;
 }
+
 
 .nexus-form {
   display: none; 
@@ -275,30 +275,31 @@
 .contact-card {
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
-  padding: 40px;
-  border-radius: 12px;
+  padding: 45px; 
+  border-radius: 16px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
 }
 
 .form-tabs {
   display: flex;
   background-color: #f3f4f6;
-  padding: 4px;
-  border-radius: 10px;
-  margin-bottom: 32px;
+  padding: 5px;
+  border-radius: 12px;
+  margin-bottom: 36px;
 }
 
 .tab-btn {
   flex: 1;
-  padding: 12px;
+  padding: 14px;
   border: none;
   background: transparent;
-  font-size: 14px;
+  font-size: 16px; 
   font-weight: 600;
   color: #4b5563;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 10px;
   transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
 }
 
 .tab-btn.active {
@@ -308,94 +309,107 @@
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .form-group label {
-  font-size: 14px;
+  font-size: 16px; 
   font-weight: 600;
   color: #374151;
+  font-family: 'Inter', sans-serif;
 }
 
 .form-group input, .form-group select, .form-group textarea {
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 18px; 
   border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 10px;
+  font-size: 16px; 
   outline: none;
+  font-family: 'Inter', sans-serif;
 }
 
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
   border-color: #3960AB;
+  box-shadow: 0 0 0 3px rgba(57, 96, 171, 0.15);
 }
 
 .btn-submit {
   width: 100%;
   background-color: #3960AB;
   color: #ffffff;
-  padding: 14px;
+  padding: 16px;
   border: none;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 16px; 
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
+  font-family: 'Inter', sans-serif;
 }
 
 .btn-submit:hover {
   background-color: #2e4d8c;
 }
 
+
 .info-side__title {
-  font-size: 24px;
+  font-size: 40px; 
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  color: #3960AB;
+  font-family: 'Inter', sans-serif;
 }
 
 .info-side__desc {
   color: #4b5563;
-  font-size: 15px;
-  margin-bottom: 40px;
+  font-size: 18px;
+  margin-bottom: 48px;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
 }
 
 .info-channels {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 36px;
 }
 
 .channel-item {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   align-items: center;
 }
 
 .channel-item i {
-  font-size: 18px;
+  font-size: 20px;
   color: #3960AB;
   background: rgba(57, 96, 171, 0.08);
-  padding: 14px;
+  padding: 16px;
   border-radius: 50%;
-  width: 46px;
-  height: 46px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .channel-text h3 {
-  font-size: 15px;
+  font-size: 18px; 
   font-weight: 700;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
+  font-family: 'Inter', sans-serif;
+  color: #111827;
 }
 
 .channel-text p {
-  font-size: 14px;
+  font-size: 16px; 
   color: #4b5563;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.4;
 }
 
 
@@ -500,6 +514,245 @@
 }
 
 
+
+.services-hero {
+  background: linear-gradient(rgba(24, 39, 70, 0.8), rgba(24, 39, 70, 0.85)), 
+              url('./img/img-servicios.png') no-repeat center center/cover;
+  padding: 100px 0;
+  text-align: center;
+  color: #ffffff;
+}
+
+.services-hero__title {
+  font-size: 42px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+}
+
+
+.services-showcase__container--grid {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 80px 95px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 40px;                             
+  align-items: start;
+}
+
+
+.services-group {
+  background-color: #ffffff;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+details.services-group[open] {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+
+.services-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 35px 40px;
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  list-style: none; 
+  cursor: pointer;
+  transition: border-color 0.2s ease, border-radius 0.2s ease;
+}
+
+.services-card::-webkit-details-marker {
+  display: none; 
+}
+
+
+details.services-group[open] .services-card {
+  border-radius: 25px 25px 0 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.services-card__header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.services-card__icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.services-card__title {
+  color: #3960AB;
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.services-card__title span {
+  font-weight: 400;
+}
+
+.services-card__summary {
+  color: #4b5563;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+
+.services-desc {
+  padding: 35px 40px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-top: none; 
+  border-radius: 0 0 25px 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.services-desc__subtitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3960AB;
+  font-family: 'Inter', sans-serif;
+  margin-top: 5px;
+}
+
+.services-desc__subtitle:first-of-type {
+  margin-top: 0;
+}
+
+.services-desc__text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #1a1a1a;
+  font-family: 'Inter', sans-serif;
+}
+
+
+
+.commercial-policies {
+  padding: 80px 0;
+  background-color: #ffffff;
+  border-top: 1px solid #f3f4f6;
+}
+
+.commercial-policies__container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 95px;
+}
+
+.commercial-policies__title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #3960AB;
+  text-align: center;
+  margin-bottom: 48px;
+  font-family: 'Inter', sans-serif;
+}
+
+
+.policy-accordion {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+details.policy-accordion[open] {
+  border-color: #3960AB;
+  box-shadow: 0 4px 20px rgba(57, 96, 171, 0.08);
+}
+
+
+.policy-accordion__summary {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  padding: 20px 24px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Inter', sans-serif;
+  user-select: none;
+}
+
+.policy-accordion__summary::-webkit-details-marker {
+  display: none;
+}
+
+
+.policy-accordion__arrow {
+  font-family: monospace;
+  color: #3960AB;
+  font-size: 16px;
+  transition: transform 0.25s ease;
+  display: inline-block;
+}
+
+details.policy-accordion[open] .policy-accordion__arrow {
+  transform: rotate(180deg);
+}
+
+/* Contenido Interno Desplegado */
+.policy-accordion__content {
+  padding: 0 24px 24px 24px;
+  border-top: 1px solid #f3f4f6;
+  background-color: #f9fafb;
+}
+
+.policy-accordion__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 20px;
+}
+
+.policy-accordion__list li {
+  font-size: 15px;
+  color: #4b5563;
+  line-height: 1.6;
+  position: relative;
+  padding-left: 24px;
+  font-family: 'Inter', sans-serif;
+}
+
+
+.policy-accordion__list li::before {
+  content: "•";
+  color: #3960AB;
+  position: absolute;
+  left: 8px;
+  font-weight: bold;
+  font-size: 18px;
+  top: -2px;
+}
+
+.policy-accordion__list li strong {
+  color: #111827;
+}
+
+
+
 .services {
   width: 100%;
   background-color: #ffffff;
@@ -561,9 +814,7 @@
   margin: 0;
 }
 
-/* ==========================================================================
-   Añadido: Sección Integraciones E-Commerce (image_981889.png)
-   ========================================================================== */
+
 .integrations {
   width: 100%;
   background-color: #ffffff;
@@ -601,9 +852,7 @@
   object-fit: contain;
 }
 
-/* ==========================================================================
-   Añadido: Sección ¿Por qué elegirnos? (image_981889.png)
-   ========================================================================== */
+
 .benefits {
   width: 100%;
   background-color: #ffffff;
@@ -653,7 +902,7 @@
 }
 
 .benefits__item {
-  font-size: 16px;
+  font-size: 25px;
   font-weight: 500;
   color: #111827;
   position: relative;
@@ -681,7 +930,7 @@
 
 @media (max-width: 768px) {
   
-  /* Header Mobile */
+  
   .header {
     padding: 15px 20px; 
     position: relative;
@@ -737,7 +986,7 @@
     font-size: 18px; 
   }
 
-  /* Hero Mobile */
+ 
   .hero--home {
     height: auto;
     min-height: 420px;
@@ -759,13 +1008,13 @@
     max-width: 100%;
   }
 
-  .hero__button--primary {
+  .hero--button--primary, .hero__button--primary {
     width: 100%;
     max-width: 280px;
     text-align: center;
   }
 
-  /* --- Sección ¿Quiénes Somos? Mobile --- */
+ 
   .about__container {
     flex-direction: column; 
     padding: 40px 24px;     
@@ -791,7 +1040,15 @@
     border-radius: 20px;
   }
 
-  /* --- Sección Servicios Mobile (Home e Interna) --- */
+  
+  .services-hero {
+    padding: 60px 24px;
+  }
+  
+  .services-hero__title {
+    font-size: 32px;
+  }
+
   .services__container {
     padding: 40px 24px;
   }
@@ -806,22 +1063,47 @@
     gap: 20px;
   }
 
+  
   .services-showcase__container--grid {
     grid-template-columns: 1fr !important;
     padding: 40px 24px;
     gap: 24px;
   }
 
+  .services-card {
+    padding: 24px;
+  }
+  
+  .services-card__title {
+    font-size: 20px;
+  }
+
   .services-desc {
-    margin-top: -15px;
+    padding: 24px;
+    margin-top: -25px;
     border-radius: 0 0 20px 20px;
+  }
+
+  
+  .commercial-policies {
+    padding: 40px 0;
+  }
+  
+  .commercial-policies__title {
+    font-size: 26px;
+    margin-bottom: 32px;
   }
 
   .commercial-policies__container {
     padding: 0 24px;
   }
+  
+  .policy-accordion__summary {
+    font-size: 14px;
+    padding: 16px;
+  }
 
-  /* --- Sección Integraciones Mobile --- */
+  
   .integrations__container {
     padding: 40px 24px;
   }
@@ -839,7 +1121,7 @@
     max-height: 35px;       
   }
 
-  /* --- Sección Beneficios Mobile --- */
+  
   .benefits {
     padding: 40px 0;
   }
@@ -854,13 +1136,17 @@
     font-size: 26px;
   }
 
-  /* --- Sección de Contacto Mobile --- */
+  
   .hero-contact {
     padding: 50px 24px;
   }
 
   .hero-contact__title {
     font-size: 28px;
+  }
+  
+  .hero-contact__text {
+    font-size: 15px;
   }
 
   .contact-section {
@@ -872,11 +1158,47 @@
     gap: 40px;
   }
 
+  .info-side__title {
+    font-size: 26px;
+  }
+
+  .info-side__desc {
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  .channel-text h3 {
+    font-size: 16px;
+  }
+
+  .channel-text p {
+    font-size: 14px;
+  }
+
   .contact-card {
     padding: 24px;
   }
+  
+  .tab-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+  
+  .form-group label {
+    font-size: 14px;
+  }
+  
+  .form-group input, .form-group select, .form-group textarea {
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+  
+  .btn-submit {
+    font-size: 15px;
+    padding: 14px;
+  }
 
-  /* --- Footer Mobile --- */
+  
   .footer {
     padding: 40px 24px 30px 24px;
   }
