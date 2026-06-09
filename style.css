@@ -14,6 +14,7 @@
 
 .header {
   width: 100%;
+  height: 80px;
   display: flex;
   justify-content: space-between; 
   align-items: center;
@@ -239,6 +240,7 @@
   font-size: 46px; 
   font-weight: 700;
   margin-bottom: 16px;
+  font-family: 'Inter', sans-serif;
 }
 
 .hero-contact__text {
@@ -247,6 +249,7 @@
   max-width: 650px;
   margin: 0 auto;
   line-height: 1.6;
+  font-family: 'Apple', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
 
 .contact-section {
