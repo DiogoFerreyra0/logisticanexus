@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form_type = $_POST['form_type'] ?? '';
     
     
-    $destinatario = "logisticanexus@gmail.com"; 
+    $destinatario = "logistica.nexus7@gmail.com"; 
 
     if ($form_type === 'clientes') {
         $empresa = htmlspecialchars($_POST['empresa_name'] ?? '');
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-Type: text/plain; charset=UTF-8" . "\r\n";
-    $headers .= "From: Web Nexus <no-reply@logisticanexus.com>" . "\r\n"; // Cuando tengas el dominio, Hostinger validará esto perfectamente
+    $headers .= "From: Web Nexus <no-reply@logistica.nexus7@gmail.com>" . "\r\n"; 
     $headers .= "Reply-To: $email" . "\r\n";
 
     
