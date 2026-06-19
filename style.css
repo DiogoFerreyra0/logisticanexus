@@ -460,7 +460,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
 
-/* Efecto hover flotante con resplandor azul */
+
 .services-group:hover {
   transform: translateY(-6px); 
   box-shadow: 0 16px 36px rgba(24, 39, 70, 0.08); 

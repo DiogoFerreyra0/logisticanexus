@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     
     
-    $destinatario = "Comerciales@logisticanexus.com.ar"; 
+    $destinatario = "Comerciales@logisticanexus.com"; 
 
     if ($form_type === 'clientes') {
         $empresa = htmlspecialchars($_POST['empresa_name'] ?? '');
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-Type: text/plain; charset=UTF-8" . "\r\n";
-    $headers .= "From: Web Nexus <no-reply@logisticanexus.com.ar>" . "\r\n"; // Remitente oficial validado
+    $headers .= "From: Web Nexus <no-reply@logisticanexus.com>" . "\r\n"; 
     $headers .= "Reply-To: $email" . "\r\n";
 
     
