@@ -1,0 +1,54 @@
+<section class="tracking-section" id="encontra-tu-envio">
+  <div class="tracking-section__container">
+    <div class="tracking-section__header">
+      <h2 class="tracking-section__title">Encontrá tu envío</h2>
+      <p class="tracking-section__subtitle">Ingresá el código alfanumérico provisto para conocer el estado actual de tu carga.</p>
+    </div>
+
+    <link rel="stylesheet" href="../style.css">
+
+    <form class="tracking-form" id="trackingForm">
+      <div class="tracking-form__group">
+        <input 
+          type="text" 
+          id="trackingInput" 
+          class="tracking-form__input" 
+          placeholder="Ej: NEX-98234" 
+          required 
+          autocomplete="off"
+        />
+        <button type="submit" class="tracking-form__button" id="trackingSubmitBtn">
+          <span class="tracking-form__button-text">Consultar</span>
+          <span class="tracking-form__spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+      <p class="tracking-form__feedback" id="trackingFeedback" aria-live="polite"></p>
+    </form>
+
+    
+    <div class="tracking-card" id="trackingResult" hidden>
+      <div class="tracking-card__header">
+        <span class="tracking-card__code-label">Envío:</span>
+        <strong class="tracking-card__code" id="resTrackingCode">-</strong>
+        <span class="tracking-card__badge" id="resStatusBadge">-</span>
+      </div>
+
+      <div class="tracking-card__body">
+        <div class="tracking-card__info-row">
+          <div class="tracking-card__info-col">
+            <span class="tracking-card__info-title">Origen</span>
+            <span class="tracking-card__info-value" id="resOrigen">-</span>
+          </div>
+          <div class="tracking-card__info-col">
+            <span class="tracking-card__info-title">Destino</span>
+            <span class="tracking-card__info-value" id="resDestino">-</span>
+          </div>
+          <div class="tracking-card__info-col">
+            <span class="tracking-card__info-title">Última actualización</span>
+            <span class="tracking-card__info-value" id="resFecha">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

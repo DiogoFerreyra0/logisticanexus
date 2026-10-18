@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Nuestros Servicios Logísticos - Logística Nexus</title>
-    <meta name="description" content="Conoce las soluciones logísticas de Nexus: Mercado Envíos Flex de última milla, entregas urgentes Turbo, logística inversa y fulfillment integral para e-commerce.">
-    <link rel="canonical" href="https://www.logisticanexus.com/pages/servicios.html">
+    <title>Nuestros Servicios Logísticos - Rupack</title>
+    <meta name="description" content="Conoce las soluciones logísticas de Rupack: Flex de última milla, entregas urgentes, logística inversa y fulfillment integral para e-commerce.">
+    <link rel="canonical" href="https://www.rupack.com.ar/pages/servicios.html">
     <meta name="robots" content="index, follow">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Logística Nexus - Servicios Integrales de Distribución">
+    <meta property="og:title" content="Rupack - Servicios Integrales de Distribución">
     <meta property="og:description" content="Envíos Same Day/Next Day, Logística Inversa, Fulfillment y Soluciones a la Medida corporativa.">
-    <meta property="og:image" content="https://www.logisticanexus.com/img/og-services-share.jpg">
-    <meta property="og:url" content="https://www.logisticanexus.com/pages/servicios.html">
+    <meta property="og:image" content="https://www.rupack.com.ar/img/og-services-share.jpg">
+    <meta property="og:url" content="https://www.rupack.com.ar/pages/servicios.html">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,9 @@
 <body>  
 
   <header class="header">
-    <img src="../img/Logo_nexus.png" alt="Logística Nexus" class="header__logo">
+    <a href="../index.html" class="header__logo-link">
+        <img src="../img/Logo_rupack.png" alt="Rupack Logística" class="header__logo">
+    </a>
 
     <button class="header__toggle" id="menuToggle" aria-label="Abrir menú">
       <span class="header__toggle-line"></span>
@@ -39,44 +41,56 @@
       <ul class="header__menu">
         <li class="header__item"><a href="../index.html" class="header__link">Inicio</a></li>
         <li class="header__item"><a href="servicios.html" class="header__link header__link--active">Servicios</a></li>
-        <li class="header__item"><a href="Contacto.html" class="header__link">Contacto</a></li>
+        <li class="header__item"><a href="contacto.html" class="header__link">Contacto</a></li>
       </ul>
     </nav>
   </header>
 
   <main class="main_content">
       
-      <section class="services-hero">
-          <div class="services-hero__content">
-              <h1 class="services-hero__title">Nuestros servicios</h1>
+      <!-- HERO SERVICIOS (Fondo azul oscuro) -->
+      <section class="services-hero" style="background: #0b2545; padding: 120px 20px;">
+          <div class="services-hero__content" style="text-align: center;">
+              <h1 class="services-hero__title" style="color: #ffffff; font-size: 48px; font-weight: 700; font-family: 'Inter', sans-serif;">Nuestros servicios</h1>
           </div>
       </section>
 
-      <section class="services-showcase">
+      <!-- ACORDEONES DE SERVICIOS -->
+      <section class="services-showcase" style="padding: 80px 0;">
           <div class="services-showcase__container services-showcase__container--grid">
               
+              <!-- RUPACK Flex -->
               <details class="services-group">
                   <summary class="services-card">
                       <div class="services-card__header">
-                          <img src="../img/Camion-entrega-rapida.png" alt="Icono Distribución" class="services-card__icon">
-                          <h3 class="services-card__title">Nexus <span>Flex</span></h3>
+                          <svg class="services-card__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f28c28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                              <circle cx="9" cy="7" r="4" />
+                              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                          </svg>
+                          <h3 class="services-card__title">RUPACK Flex</h3>
                       </div>
                       <p class="services-card__summary">Realizamos distribuciones ágiles y eficaces en AMBA y las principales ciudades del país, conectando tus ventas online con soluciones de entrega en el día.</p>
                   </summary>
                   
                   <div class="services-desc">
-                      <h4 class="services-desc__subtitle">Nexus Flex</h4>
-                      <p class="services-desc__text">Es nuestra solution estrella diseñada exclusivamente para el comercio electrónico. Nos encargamos de retirar tus paquetes consolidados y entregarlos de forma prioritaria en menos de 24 horas, bajo las modalidades Same Day (mismo día) o Next Day (siguiente día).</p>
+                      <h4 class="services-desc__subtitle">RUPACK Flex</h4>
+                      <p class="services-desc__text">Es nuestra solución estrella diseñada exclusivamente para el comercio electrónico. Nos encargamos de retirar tus paquetes consolidados y entregarlos de forma prioritaria en menos de 24 horas, bajo las modalidades Same Day (mismo día) o Next Day (siguiente día).</p>
                       
-                      <h4 class="services-desc__subtitle">Nexus Turbo</h4>
-                      <p class="services-desc__text">Para aquellos envíos donde cada minuto cuenta, activamos nuestro protocolo de entrega súper urgente. Con Nexus Turbo, nuestra flota se moviliza de inmediato para realizar entregas en un rango menor a las 3 horas, garantizando la máxima velocidad, eficiencia y tranquilidad para tus operaciones más críticas.</p>
+                      <h4 class="services-desc__subtitle">Entregas Urgentes</h4>
+                      <p class="services-desc__text">Para aquellos envíos donde cada minuto cuenta, activamos nuestro protocolo de entrega súper urgente. Nuestra flota se moviliza de inmediato para realizar entregas en un rango menor a las 3 horas, garantizando la máxima velocidad.</p>
                   </div>
               </details>
 
+              <!-- Logística Inversa -->
               <details class="services-group">
                   <summary class="services-card">
                       <div class="services-card__header">
-                          <img src="../img/logistica-inversa.png" alt="Icono Logística Inversa" class="services-card__icon">
+                          <svg class="services-card__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f28c28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                              <path d="M3 3v5h5"/>
+                          </svg>
                           <h3 class="services-card__title">Logística inversa</h3>
                       </div>
                       <p class="services-card__summary">Gestión eficiente y transparente de cambios, devoluciones y recuperación de mercaderías para optimizar la experiencia post-venta de tu negocio.</p>
@@ -88,10 +102,15 @@
                   </div>
               </details>
 
+              <!-- Fulfillment -->
               <details class="services-group">
                   <summary class="services-card">
                       <div class="services-card__header">
-                          <img src="../img/Fulfillment.png" alt="Icono Fulfillment" class="services-card__icon">
+                          <svg class="services-card__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f28c28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                          </svg>
                           <h3 class="services-card__title">Fulfillment</h3>
                       </div>
                       <p class="services-card__summary">Actuamos ante imprevistos críticos dando respuesta inmediata con activación de flota en minutos.</p>
@@ -103,10 +122,16 @@
                   </div>
               </details>
 
+              <!-- A la Medida -->
               <details class="services-group">
                   <summary class="services-card">
                       <div class="services-card__header">
-                          <img src="../img/A-la-medida.png" alt="Icono Operatoria Personalizada" class="services-card__icon">
+                          <svg class="services-card__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f28c28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                              <path d="M12 12h.01"></path>
+                              <path d="M16 12h.01"></path>
+                              <path d="M8 12h.01"></path>
+                          </svg>
                           <h3 class="services-card__title">A la Medida</h3>
                       </div>
                       <p class="services-card__summary">Diseñamos la operatoria según tu necesidad real: primera milla, última milla o rutas especiales dedicadas.</p>
@@ -121,42 +146,43 @@
           </div>
       </section>
 
-      <section class="coverage">
-          <div class="coverage__container">
-              <h2 class="coverage__title">Nuestra Área de Cobertura</h2>
-              <p class="coverage__subtitle">Operamos estratégicamente en las principales zonas comerciales para garantizar entregas eficientes en tiempo récord.</p>
-              
-              <div class="coverage__grid">
-                  
-                  <article class="coverage__card">
-                      <div class="coverage__image-wrapper">
-                          <img src="../img/BSAS.png" alt="Mapa de Cobertura Buenos Aires y AMBA - Logística Nexus" class="coverage__img">
-                      </div>
-                      <div class="coverage__content">
-                          <h3 class="coverage__card-title">Buenos Aires y AMBA</h3>
-                          <p class="coverage__card-desc">Cobertura de alta densidad y capilaridad absoluta para envíos de última milla:</p>
-                          <ul class="coverage__list">
-                              <li><strong>Zonas Core:</strong> CABA, La Matanza, Morón, San Martín y Vicente López.</li>
-                              <li><strong>Zona Norte:</strong> San Isidro, Tigre, Pilar, Escobar, San Miguel, Malvinas Argentinas, José C. Paz y Zárate/Campana.</li>
-                              <li><strong>Zona Oeste:</strong> Tres de Febrero, Hurlingham, Ituzaingó, Merlo, Moreno, General Rodríguez y Luján.</li>
-                              <li><strong>Zona Sur:</strong> Avellaneda, Lanús, Lomas de Zamora, Quilmes, Almirante Brown, Berazategui, Florencio Varela y La Plata.</li>
-                          </ul>
-                      </div>
-                  </article>
-
-                  
-
-              </div>
-          </div>
-      </section>
-
+      <!-- ÁREA DE COBERTURA -->
+<section class="coverage">
+    <div class="coverage__container">
+        <h2 class="coverage__title">Nuestra Área de Cobertura</h2>
+        <p class="coverage__subtitle">Operamos estratégicamente en las principales zonas comerciales para garantizar entregas eficientes en tiempo récord.</p>
+        
+        <!-- Tarjeta Horizontal -->
+        <div class="coverage__card">
+            
+            <!-- Mitad Izquierda: Mapa con fondo oscuro -->
+            <div class="coverage__image-wrapper">
+                <img src="../img/BSAS.png" alt="Mapa de Cobertura Buenos Aires y AMBA - Rupack" class="coverage__img">
+            </div>
+            
+            <!-- Mitad Derecha: Contenido y Lista -->
+            <div class="coverage__content">
+                <h3 class="coverage__card-title">Buenos Aires y AMBA</h3>
+                <p class="coverage__card-desc">Cobertura de alta densidad y capilaridad absoluta para envíos de última milla:</p>
+                <ul class="coverage__list">
+                    <li><strong>Zonas Core:</strong> CABA, La Matanza, Morón, San Martín y Vicente López.</li>
+                    <li><strong>Zona Norte:</strong> San Isidro, Tigre, Pilar, Escobar, San Miguel, Malvinas Argentinas, José C. Paz y Zárate/Campana.</li>
+                    <li><strong>Zona Oeste:</strong> Tres de Febrero, Hurlingham, Ituzaingó, Merlo, Moreno, General Rodríguez y Luján.</li>
+                    <li><strong>Zona Sur:</strong> Avellaneda, Lanús, Lomas de Zamora, Quilmes, Almirante Brown, Berazategui, Florencio Varela y La Plata.</li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+</section>
+      <!-- POLÍTICAS -->
       <section class="commercial-policies">
           <div class="commercial-policies__container">
               <h2 class="commercial-policies__title">Políticas y Condiciones Comerciales</h2>
 
               <details class="policy-accordion">
                   <summary class="policy-accordion__summary">
-                      políticas de despacho y envio <span class="policy-accordion__arrow">v</span>
+                      POLÍTICAS DE DESPACHO Y ENVIO <span class="policy-accordion__arrow">v</span>
                   </summary>
                   <div class="policy-accordion__content">
                       <ul class="policy-accordion__list">
@@ -168,7 +194,7 @@
 
               <details class="policy-accordion">
                   <summary class="policy-accordion__summary">
-                      tarifas, facturación y envios <span class="policy-accordion__arrow">v</span>
+                      TARIFAS, FACTURACIÓN Y ENVIOS <span class="policy-accordion__arrow">v</span>
                   </summary>
                   <div class="policy-accordion__content">
                       <ul class="policy-accordion__list">
@@ -182,7 +208,7 @@
 
               <details class="policy-accordion">
                   <summary class="policy-accordion__summary">
-                      Servicios especializados y adicionales <span class="policy-accordion__arrow">v</span>
+                      SERVICIOS ESPECIALIZADOS Y ADICIONALES <span class="policy-accordion__arrow">v</span>
                   </summary>
                   <div class="policy-accordion__content">
                       <ul class="policy-accordion__list">
@@ -196,16 +222,14 @@
 
   </main>     
 
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="footer__container">
       
       <div class="footer__column footer__column--brand">
-        <h2 class="footer__brand-title">Logística <span>Nexus</span></h2>
+        <img src="../img/Logo_rupack_blanco.png" alt="Rupack Logística" class="footer__logo">
         <p class="footer__brand-text">Tu socio logístico para un futuro sin límites. Conectamos tecnología, flota y confianza en cada punto del país.</p>
-        
-       
-
-        <p class="footer__copy">&copy; 2026 Logística Nexus. Todos los derechos reservados.</p>
+        <p class="footer__copy">&copy; 2026 RUPACK Logística y Transporte. Todos los derechos reservados.</p>
       </div>
 
       <div class="footer__column footer__column--nav">
@@ -213,16 +237,24 @@
         <ul class="footer__list">
           <li><a href="../index.html" class="footer__link">inicio</a></li>
           <li><a href="servicios.html" class="footer__link">servicios</a></li>
-          <li><a href="Contacto.html" class="footer__link">contacto</a></li>
+          <li><a href="contacto.html" class="footer__link">contacto</a></li>
         </ul>
       </div>
 
       <div class="footer__column footer__column--contact">
         <h3 class="footer__title">CONTACTO</h3>
         <ul class="footer__list">
-          <li><a href="mailto:Comerciales@logisticanexus.com.ar" class="footer__link">Comerciales@logisticanexus.com.ar</a></li>
-          <li><a href="https://wa.me/5491154597235" target="_blank" rel="noopener noreferrer" class="footer__link">+54 9 11 5459-7235</a></li>
-          <li class="footer__address">Buenos Aires - Los polvorines<br>Gualeguaychú - Entre Ríos</li>
+          <li>
+            <a href="mailto:comercial@rupack.com.ar" class="footer__link">
+              comercial@rupack.com.ar
+            </a>
+          </li>
+          <li>
+            <a href="https://wa.me/5491154597235" target="_blank" rel="noopener noreferrer" class="footer__link">
+              +54 9 11 5459-7235
+            </a>
+          </li>
+          <li class="footer__address">Buenos Aires - Los polvorines</li>
         </ul>
       </div>
 
