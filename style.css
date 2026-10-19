@@ -525,6 +525,26 @@
   font-size: 15px;
   font-family: 'Inter', sans-serif;
   transition: background-color 0.3s ease, transform 0.1s ease;
+  white-space: nowrap; /* Evita que el texto del botón se rompa en varias líneas */
+}
+
+.boton--naranja:hover {
+  background-color: #e07b22;
+}
+
+.boton--naranja {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #f28c28;
+  color: #ffffff;
+  padding: 16px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
 .boton--naranja:hover {
