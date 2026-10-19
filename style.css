@@ -22,30 +22,7 @@
 }
 
 /* --- HEADER --- */
-.header {
-  width: 100%;
-  height: 90px;
-  display: flex;
-  justify-content: space-between; 
-  align-items: center;
-  padding: 20px 63px 20px 48px;
-  background-color: #ffffff;
-}
-
-.header__logo-link {
-  display: flex;
-  align-items: center;
-}
-
-.header__logo {
-  height: auto;
-  max-width: 180px; 
-}
-
-.header__toggle {
-  display: none;
-}
-
+.header {/* --- HEADER MEJORADO Y ESTÁTICO --- */
 .header__menu {
   list-style: none;
   margin: 0;
@@ -59,25 +36,33 @@
 
 .header__item {
   display: flex;
-  padding: 12px 20px;
+  /* Damos un ancho fijo o un padding estable para que el espacio no varíe al cambiar el grosor de la fuente */
+  width: 130px; 
+  height: 50px;
   justify-content: center;
   align-items: center;
-  gap: 10px;
 }
 
 .header__link {
   text-decoration: none;
   color: #000;
   font-family: 'Inter', sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 400;
-  transition: color 0.2s ease;
+  /* Usamos transform en lugar de cambiar el tamaño de fuente (font-size) bruto, 
+     lo que evita que desplace contenedores y hace la animación fluida */
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-block;
+  text-align: center;
 }
 
-.header__link--active, .header__link:hover {
+/* Al poner el mouse o si está activo */
+.header__link--active, 
+.header__link:hover {
   font-weight: 800;
   color: #f28c28; /* Naranja Rupack */
-}
+  transform: scale(1.1); /* Agranda ligeramente el link sin mover a los vecinos de lugar */
+}}
 
 /* --- HEROS --- */
 .hero--home {
