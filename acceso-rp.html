@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuPack - Acceso</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0b2545; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: white; padding: 40px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .login-box img { max-width: 160px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        button { width: 100%; padding: 12px; background: #f28c28; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .error { color: #dc3545; font-size: 14px; margin-top: 15px; display: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <img src="./img/Logo_rupack.png" alt="RuPack Scan">
+        <h3 style="color: #0b2545; margin-top: 0;">Sistema Operativo</h3>
+        <input type="text" id="user" placeholder="Usuario">
+        <input type="password" id="pass" placeholder="Contraseña">
+        <button onclick="login()">Ingresar</button>
+        <div id="error-msg" class="error">Usuario o contraseña incorrectos</div>
+    </div>
+    <script>
+        function login() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            fetch('/api/auth.php?action=login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: u, password: p})
+            }).then(r => r.json()).then(data => {
+                if(data.status === 'success') {
+                    localStorage.setItem('rup_depot_id', data.user.depot_id);
+                    window.location.href = 'escaner.html';
+                } else {
+                    document.getElementById('error-msg').style.display = 'block';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

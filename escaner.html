@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuPack Scan - Recepción</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; margin: 0; padding: 20px; }
+        #reader { width: 100%; max-width: 500px; margin: 0 auto; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .info-box { background: #fff; margin-top: 20px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: left;}
+        .status-box { background: #333; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-weight: bold; }
+        .status-offline { background: #dc3545; }
+        .status-online { background: #28a745; }
+        .status-ocr { background: #ffc107; color: #333; display: none; padding: 5px; margin-top: 10px; border-radius: 5px; font-size: 14px; font-weight: bold; text-align: center; }
+        h1 { color: #0b2545; font-size: 24px; margin-bottom: 10px; }
+        .data-row { margin-bottom: 8px; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .data-row span { font-weight: bold; color: #f28c28; }
+    </style>
+</head>
+<body>
+    <h1>RuPack Recepción</h1>
+    <div id="conexionStatus" class="status-box status-online">Conexión: ONLINE</div>
+    <div id="colaStatus" style="margin-bottom: 15px; font-weight: bold; color: #666;">Pendientes de subir: 0</div>
+    <div id="reader"></div>
+    <div id="ocrStatus" class="status-ocr">Analizando etiqueta con OCR... ⏳</div>
+    <div class="info-box">
+        <div class="data-row">Tracking: <span id="resTracking">Esperando...</span></div>
+        <div class="data-row">Localidad OCR: <span id="resLocalidad">Esperando...</span></div>
+    </div>
+
+    <script>
+        fetch('/api/auth.php?action=check').then(res => res.json()).then(data => {
+            if (data.status !== 'logged_in') window.location.href = 'acceso-rp.html';
+        });
+
+        let html5QrcodeScanner, db, procesandoOCR = false;
+
+        const request = indexedDB.open("RuPackOfflineDB", 2);
+        request.onupgradeneeded = e => { db = e.target.result; if (!db.objectStoreNames.contains("escaneos")) db.createObjectStore("escaneos", { keyPath: "id" }); };
+        request.onsuccess = e => { db = e.target.result; actualizarContador(); };
+
+        function onScanSuccess(decodedText) {
+            if (procesandoOCR) return;
+            document.getElementById('resTracking').innerText = decodedText;
+            if (navigator.vibrate) navigator.vibrate(200);
+            html5QrcodeScanner.pause(true); procesandoOCR = true;
+            document.getElementById('ocrStatus').style.display = 'block';
+
+            const video = document.querySelector('#reader video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            Tesseract.recognize(canvas.toDataURL('image/png'), 'spa').then(({ data: { text } }) => {
+                const localidades = ["SAN MARTIN", "SAN ANDRES", "FLORIDA", "MUNRO", "SAN ISIDRO", "MARTINEZ", "TIGRE", "PILAR", "ESCOBAR"];
+                let localidad = "Revisión manual";
+                for (let loc of localidades) if (text.toUpperCase().includes(loc)) { localidad = loc; break; }
+                document.getElementById('resLocalidad').innerText = localidad;
+                guardarLocal(decodedText, localidad, text);
+            }).finally(() => {
+                document.getElementById('ocrStatus').style.display = 'none';
+                procesandoOCR = false; setTimeout(() => html5QrcodeScanner.resume(), 1500);
+            });
+        }
+
+        function guardarLocal(tracking, localidad, texto) {
+            const tx = db.transaction(["escaneos"], "readwrite");
+            tx.objectStore("escaneos").add({
+                id: Date.now().toString(), tracking_number: tracking, company_id: 1, 
+                current_depot_id: localStorage.getItem('rup_depot_id') || 1, location_name: localidad,
+                observations: texto.substring(0, 50), fecha: new Date().toISOString()
+            });
+            tx.oncomplete = () => { actualizarContador(); if (navigator.onLine) sincronizar(); };
+        }
+
+        function sincronizar() {
+            if (!navigator.onLine) return;
+            const req = db.transaction(["escaneos"], "readonly").objectStore("escaneos").getAll();
+            req.onsuccess = () => {
+                if (req.result.length === 0) return;
+                fetch('/api/sincronizar.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(req.result) })
+                .then(r => r.json()).then(d => { if (d.status === 'success') db.transaction(["escaneos"], "readwrite").objectStore("escaneos").clear().oncomplete = actualizarContador; });
+            };
+        }
+
+        function actualizarContador() { db.transaction(["escaneos"]).objectStore("escaneos").count().onsuccess = e => document.getElementById('colaStatus').innerText = "Pendientes de subir: " + e.target.result; }
+
+        window.addEventListener('online', () => { document.getElementById('conexionStatus').className = "status-box status-online"; document.getElementById('conexionStatus').innerText = "Conexión: ONLINE"; sincronizar(); });
+        window.addEventListener('offline', () => { document.getElementById('conexionStatus').className = "status-box status-offline"; document.getElementById('conexionStatus').innerText = "Conexión: OFFLINE"; });
+
+        window.onload = () => { html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 150} }, false); html5QrcodeScanner.render(onScanSuccess, () => {}); };
+    </script>
+</body>
+</html>
