@@ -42,7 +42,88 @@
     <a href="index.html" class="header__logo-link">
         <img src="./img/Logo_rupack.png" alt="Rupack - Socio Logístico" class="header__logo">
     </a>
+    <!-- SECCIÓN DE SEGUIMIENTO RUPACK -->
+<section id="seguimiento-section" style="padding: 40px 20px; background-color: #f9f9fb; text-align: center; font-family: Arial, sans-serif;">
+    <div style="max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+        <h2 style="color: #004085; margin-bottom: 10px;">Seguimiento de Envíos</h2>
+        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Ingresá tu código de seguimiento para ver el estado actual.</p>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <input type="text" id="publicTrackingInput" placeholder="Ej: TRK-12345" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; outline: none;">
+            <button onclick="consultarEnvioPublico()" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer;">Buscar</button>
+        </div>
 
+        <div id="publicErrorMsg" style="color: #dc3545; font-weight: bold; font-size: 14px; margin-top: 10px; display: none;"></div>
+
+        <!-- Resultados -->
+        <div id="publicResultadoBox" style="margin-top: 20px; text-align: left; background: #f1f3f5; padding: 15px; border-radius: 6px; border-left: 4px solid #004085; display: none;">
+            <h4 style="margin: 0 0 10px 0; color: #333;">Resultado de la búsqueda</h4>
+            <div style="font-size: 14px; color: #444; margin-bottom: 6px;">Tracking: <strong id="pubResTracking"></strong></div>
+            <div style="font-size: 14px; color: #444; margin-bottom: 6px;">Empresa Origen: <strong id="pubResEmpresa"></strong></div>
+            <div style="font-size: 14px; color: #444; margin-bottom: 6px;">Destino / Localidad: <strong id="pubResLocalidad"></strong></div>
+            <div style="font-size: 14px; color: #444; margin-bottom: 6px;">Fecha de Ingreso: <strong id="pubResFecha"></strong></div>
+            <div style="font-size: 14px; color: #444; margin-top: 10px;">Estado: <br><span id="pubResEstado" style="display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase;"></span></div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function consultarEnvioPublico() {
+        const tracking = document.getElementById('publicTrackingInput').value.trim();
+        const errorBox = document.getElementById('publicErrorMsg');
+        const resultadoBox = document.getElementById('publicResultadoBox');
+
+        errorBox.style.display = 'none';
+        resultadoBox.style.display = 'none';
+
+        if (!tracking) {
+            errorBox.innerText = 'Por favor, ingresá un número de seguimiento.';
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        fetch(`/api/consultar.php?tracking=${encodeURIComponent(tracking)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const pkg = data.data;
+                
+                document.getElementById('pubResTracking').innerText = pkg.tracking_number;
+                document.getElementById('pubResEmpresa').innerText = pkg.company_name || 'RuPack Logística';
+                document.getElementById('pubResLocalidad').innerText = pkg.location_name || 'En tránsito general';
+                
+                let fecha = new Date(pkg.created_at).toLocaleString('es-AR');
+                document.getElementById('pubResFecha').innerText = fecha;
+
+                let estadoSpan = document.getElementById('pubResEstado');
+                estadoSpan.innerText = pkg.status.replace('_', ' ');
+                
+                // Colores dinámicos según estado
+                if (pkg.status === 'recibido') {
+                    estadoSpan.style.background = '#cce5ff'; estadoSpan.style.color = '#004085';
+                } else if (pkg.status === 'en_ruta') {
+                    estadoSpan.style.background = '#fff3cd'; estadoSpan.style.color = '#856404';
+                } else {
+                    estadoSpan.style.background = '#d4edda'; estadoSpan.style.color = '#155724';
+                }
+
+                resultadoBox.style.display = 'block';
+            } else {
+                errorBox.innerText = data.message;
+                errorBox.style.display = 'block';
+            }
+        })
+        .catch(err => {
+            errorBox.innerText = 'Error al conectar con el servidor.';
+            errorBox.style.display = 'block';
+        });
+    }
+
+    // Permitir buscar con Enter
+    document.getElementById('publicTrackingInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') consultarEnvioPublico();
+    });
+</script>
     <!--  
     <div class="header-tracking">
         <input type="text" id="headerTrackingInput" placeholder="N° de Seguimiento">
