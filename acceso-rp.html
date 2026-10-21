@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuPack - Acceso</title>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0b2545; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { font-family: 'Inter', Arial, sans-serif; background: #0b2545; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .login-box { background: white; padding: 40px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .login-box img { max-width: 160px; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
-        button { width: 100%; padding: 12px; background: #f28c28; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        .error { color: #dc3545; font-size: 14px; margin-top: 15px; display: none; font-weight: bold; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; outline: none; }
+        input:focus { border-color: #f28c28; }
+        button { width: 100%; padding: 12px; background: #f28c28; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+        button:hover { background: #e07b22; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .error { color: #dc3545; font-size: 13px; margin-top: 15px; display: none; font-weight: bold; background: #f8d7da; padding: 10px; border-radius: 6px; }
     </style>
 </head>
 <body>
@@ -19,26 +22,71 @@
         <h3 style="color: #0b2545; margin-top: 0;">Sistema Operativo</h3>
         <input type="text" id="user" placeholder="Usuario">
         <input type="password" id="pass" placeholder="Contraseña">
-        <button onclick="login()">Ingresar</button>
-        <div id="error-msg" class="error">Usuario o contraseña incorrectos</div>
+        <button id="btnLogin" onclick="login()">Ingresar</button>
+        <div id="error-msg" class="error"></div>
     </div>
     <script>
         function login() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
+            const u = document.getElementById('user').value.trim();
+            const p = document.getElementById('pass').value.trim();
+            const errBox = document.getElementById('error-msg');
+            const btn = document.getElementById('btnLogin');
+
+            errBox.style.display = 'none';
+
+            if (!u || !p) {
+                errBox.innerText = 'Completá tu usuario y contraseña.';
+                errBox.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Verificando...';
+
             fetch('/api/auth.php?action=login', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({username: u, password: p})
-            }).then(r => r.json()).then(data => {
-                if(data.status === 'success') {
-                    localStorage.setItem('rup_depot_id', data.user.depot_id);
-                    window.location.href = 'escaner.html';
-                } else {
-                    document.getElementById('error-msg').style.display = 'block';
+            })
+            .then(async r => {
+                const text = await r.text();
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    throw new Error('Respuesta inesperada del servidor: ' + text.substring(0, 100));
                 }
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    localStorage.setItem('rup_depot_id', data.user.depot_id || 1);
+                    localStorage.setItem('rup_username', data.user.username);
+                    localStorage.setItem('rup_role', data.user.role);
+
+                    // Si es supervisor o admin, va al panel completo; si es operario, al escáner
+                    const role = (data.user.role || '').toLowerCase();
+                    if (role === 'supervisor' || role === 'admin' || role === 'administrador' || u.includes('supervisor')) {
+                        window.location.href = 'supervisor.html';
+                    } else {
+                        window.location.href = 'escaner.html';
+                    }
+                } else {
+                    errBox.innerText = data.message || 'Usuario o contraseña incorrectos';
+                    errBox.style.display = 'block';
+                }
+            })
+            .catch(err => {
+                errBox.innerText = 'Error de conexión: ' + err.message;
+                errBox.style.display = 'block';
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerText = 'Ingresar';
             });
         }
+
+        document.getElementById('pass').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
     </script>
 </body>
 </html>

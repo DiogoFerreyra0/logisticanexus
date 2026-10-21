@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuPack - Panel de Supervisor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #f3f4f6; color: #1f2937; }
+        
+        /* Barra Superior */
+        .topbar { background-color: #0b2545; color: white; padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+        .topbar__brand { display: flex; align-items: center; gap: 15px; }
+        .topbar__title { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; }
+        .topbar__badge { background: #f28c28; color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .topbar__actions { display: flex; gap: 12px; align-items: center; }
+        .btn-top { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: 0.2s; }
+        .btn-scanner { background: #f28c28; color: white; }
+        .btn-scanner:hover { background: #e07b22; }
+        .btn-logout { background: rgba(255,255,255,0.15); color: white; }
+        .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+        .container { max-width: 1440px; margin: 25px auto; padding: 0 24px; }
+
+        /* Tarjetas de Resumen (KPIs) */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .kpi-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); border-left: 5px solid #0b2545; }
+        .kpi-card.orange { border-left-color: #f28c28; }
+        .kpi-card.green { border-left-color: #10b981; }
+        .kpi-card.red { border-left-color: #ef4444; }
+        .kpi-title { font-size: 13px; color: #6b7280; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+        .kpi-value { font-size: 28px; font-weight: 800; color: #111827; }
+
+        /* Barra de Filtros y Herramientas */
+        .toolbar { background: white; padding: 18px 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .filters-group { display: flex; flex-wrap: wrap; gap: 10px; flex: 1; }
+        .input-filter { padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; outline: none; min-width: 220px; }
+        .input-filter:focus { border-color: #0b2545; }
+        .btn-action { padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-new { background: #0b2545; color: white; }
+        .btn-new:hover { background: #163a66; }
+        .btn-excel { background: #10b981; color: white; }
+        .btn-excel:hover { background: #059669; }
+
+        /* Tabla de Paquetes */
+        .table-wrapper { background: white; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13.5px; }
+        thead { background-color: #f9fafb; border-bottom: 2px solid #e5e7eb; }
+        th { padding: 14px 16px; font-weight: 700; color: #374151; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; white-space: nowrap; }
+        td { padding: 14px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+        tr:hover { background-color: #f9fafb; }
+
+        /* Etiquetas de Estado */
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; display: inline-block; white-space: nowrap; }
+        .badge-recibido { background: #dbeafe; color: #1e40af; }
+        .badge-en_ruta { background: #fef3c7; color: #92400e; }
+        .badge-entregado { background: #d1fae5; color: #065f46; }
+        .badge-incidencia { background: #fee2e2; color: #991b1b; }
+        
+        .loc-dudosa { color: #dc2626; font-weight: 700; background: #fef2f2; padding: 3px 8px; border-radius: 4px; border: 1px solid #fecaca; }
+
+        .btn-edit { background: #f3f4f6; color: #1f2937; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; transition: 0.15s; }
+        .btn-edit:hover { background: #f28c28; color: white; border-color: #f28c28; }
+
+        /* Modal de Edición Completa */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 37, 69, 0.65); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-card { background: white; border-radius: 14px; width: 100%; max-width: 650px; padding: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); max-height: 92vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; }
+        .modal-header h3 { color: #0b2545; font-size: 20px; font-weight: 800; }
+        .close-btn { font-size: 24px; cursor: pointer; color: #6b7280; background: none; border: none; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: span 2; }
+        .form-group label { font-size: 12.5px; font-weight: 700; color: #374151; }
+        .form-group input, .form-group select, .form-group textarea { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; outline: none; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #f28c28; }
+
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
+        .btn-save { background: #f28c28; color: white; padding: 11px 24px; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; }
+        .btn-save:hover { background: #e07b22; }
+        .btn-delete { background: #fee2e2; color: #dc2626; padding: 10px 16px; border: none; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; }
+        .btn-delete:hover { background: #fecaca; }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: span 1; }
+            .topbar { flex-direction: column; gap: 12px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="topbar__brand">
+            <span class="topbar__title">RUPACK SCAN</span>
+            <span class="topbar__badge">Panel de Supervisor</span>
+        </div>
+        <div class="topbar__actions">
+            <a href="escaner.html" class="btn-top btn-scanner">📷 Ir al Escáner</a>
+            <button onclick="cargarPaquetes()" class="btn-top btn-logout">🔄 Actualizar</button>
+            <a href="acceso-rp.html" class="btn-top btn-logout">Salir</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Tarjetas de Resumen -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">Total Paquetes</div>
+                <div class="kpi-value" id="kpiTotal">0</div>
+            </div>
+            <div class="kpi-card orange">
+                <div class="kpi-title">En Depósito / En Ruta</div>
+                <div class="kpi-value" id="kpiActivos">0</div>
+            </div>
+            <div class="kpi-card green">
+                <div class="kpi-title">Entregados</div>
+                <div class="kpi-value" id="kpiEntregados">0</div>
+            </div>
+            <div class="kpi-card red">
+                <div class="kpi-title">Destinos a Revisar</div>
+                <div class="kpi-value" id="kpiDudosos">0</div>
+            </div>
+        </div>
+
+        <!-- Filtros y Acciones -->
+        <div class="toolbar">
+            <div class="filters-group">
+                <input type="text" id="filtroTexto" class="input-filter" placeholder="🔍 Buscar por tracking, destinatario, localidad, chofer..." oninput="filtrarTabla()">
+                <select id="filtroEstado" class="input-filter" style="min-width: 160px;" onchange="filtrarTabla()">
+                    <option value="">Todos los estados</option>
+                    <option value="recibido">Recibido en depósito</option>
+                    <option value="en_ruta">En Ruta (Despachado)</option>
+                    <option value="entregado">Entregado</option>
+                    <option value="incidencia">Con Incidencia</option>
+                </select>
+                <select id="filtroDudosos" class="input-filter" style="min-width: 170px;" onchange="filtrarTabla()">
+                    <option value="">Todas las localidades</option>
+                    <option value="dudoso">⚠️ Solo Revisión Manual</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-action btn-new" onclick="abrirModalNuevo()">+ Cargar Paquete</button>
+                <button class="btn-action btn-excel" onclick="exportarCSV()">📥 Exportar Excel</button>
+            </div>
+        </div>
+
+        <!-- Tabla Principal -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tracking</th>
+                        <th>Quién Envía (Origen)</th>
+                        <th>Destinatario / Dirección</th>
+                        <th>Localidad</th>
+                        <th>Zona</th>
+                        <th>Quién lo tiene (Chofer / Op.)</th>
+                        <th>Estado</th>
+                        <th>Ingreso</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaPaquetes">
+                    <tr><td colspan="9" style="text-align: center; padding: 30px;">Cargando paquetes...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal para Editar o Crear Paquete -->
+    <div class="modal-overlay" id="modalPaquete">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitulo">Editar Paquete</h3>
+                <button class="close-btn" onclick="cerrarModal()">&times;</button>
+            </div>
+            <input type="hidden" id="editId">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Número de Seguimiento (Tracking)</label>
+                    <input type="text" id="editTracking" placeholder="Ej: MLA-12345678">
+                </div>
+                <div class="form-group">
+                    <label>Estado Actual</label>
+                    <select id="editEstado">
+                        <option value="recibido">Recibido (En Depósito)</option>
+                        <option value="en_ruta">En Ruta (En Camioneta)</option>
+                        <option value="entregado">Entregado al Cliente</option>
+                        <option value="incidencia">Incidencia / No entregado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Destinatario (Nombre y Apellido)</label>
+                    <input type="text" id="editDestinatario" placeholder="Ej: Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono del Destinatario</label>
+                    <input type="text" id="editTelefono" placeholder="Ej: 11 4455-6677">
+                </div>
+                <div class="form-group full">
+                    <label>Dirección de Entrega</label>
+                    <input type="text" id="editDireccion" placeholder="Calle, número, piso, entre calles...">
+                </div>
+                <div class="form-group">
+                    <label>Localidad</label>
+                    <input type="text" id="editLocalidad" placeholder="Ej: SAN ISIDRO, TIGRE, PILAR...">
+                </div>
+                <div class="form-group">
+                    <label>Zona de Reparto</label>
+                    <input type="text" id="editZona" placeholder="Ej: Zona Norte 1, Zona Oeste...">
+                </div>
+                <div class="form-group full">
+                    <label>Asignado a (Chofer / Camioneta / Responsable)</label>
+                    <input type="text" id="editChofer" placeholder="Ej: Camioneta 04 - Carlos Gómez (Patente AB123CD)">
+                </div>
+                <div class="form-group full">
+                    <label>Observaciones / Texto OCR</label>
+                    <textarea id="editObservaciones" rows="3" placeholder="Notas del paquete o datos leídos en la etiqueta..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-delete" id="btnEliminar" onclick="eliminarPaquete()">🗑️ Eliminar</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-edit" onclick="cerrarModal()" style="padding: 10px 18px;">Cancelar</button>
+                    <button class="btn-save" onclick="guardarCambios()">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let paquetesGlobal = [];
+
+        function cargarPaquetes() {
+            fetch('/api/paquetes.php?action=list')
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    paquetesGlobal = res.data || [];
+                    actualizarKPIs();
+                    filtrarTabla();
+                } else {
+                    alert('Error al cargar paquetes: ' + res.message);
+                }
+            })
+            .catch(err => {
+                document.getElementById('tablaPaquetes').innerHTML = `<tr><td colspan="9" style="text-align:center; color:red; padding:25px;">Error de conexión con la API. Verificá que /api/paquetes.php esté subido.</td></tr>`;
+            });
+        }
+
+        function actualizarKPIs() {
+            const total = paquetesGlobal.length;
+            const entregados = paquetesGlobal.filter(p => p.status === 'entregado').length;
+            const activos = paquetesGlobal.filter(p => p.status === 'recibido' || p.status === 'en_ruta').length;
+            const dudosos = paquetesGlobal.filter(p => !p.location_name || p.location_name.toLowerCase().includes('revisión') || p.location_name.toLowerCase().includes('manual')).length;
+
+            document.getElementById('kpiTotal').innerText = total;
+            document.getElementById('kpiActivos').innerText = activos;
+            document.getElementById('kpiEntregados').innerText = entregados;
+            document.getElementById('kpiDudosos').innerText = dudosos;
+        }
+
+        function filtrarTabla() {
+            const texto = document.getElementById('filtroTexto').value.toLowerCase();
+            const estado = document.getElementById('filtroEstado').value;
+            const dudoso = document.getElementById('filtroDudosos').value;
+
+            const filtrados = paquetesGlobal.filter(p => {
+                const coincideTexto = 
+                    (p.tracking_number || '').toLowerCase().includes(texto) ||
+                    (p.recipient_name || '').toLowerCase().includes(texto) ||
+                    (p.recipient_address || '').toLowerCase().includes(texto) ||
+                    (p.location_name || '').toLowerCase().includes(texto) ||
+                    (p.zone_name || '').toLowerCase().includes(texto) ||
+                    (p.driver_name || '').toLowerCase().includes(texto) ||
+                    (p.company_name || '').toLowerCase().includes(texto) ||
+                    (p.operator_name || '').toLowerCase().includes(texto);
+
+                const coincideEstado = !estado || p.status === estado;
+                const esDudoso = !p.location_name || p.location_name.toLowerCase().includes('revisión') || p.location_name.toLowerCase().includes('manual');
+                const coincideDudoso = !dudoso || (dudoso === 'dudoso' && esDudoso);
+
+                return coincideTexto && coincideEstado && coincideDudoso;
+            });
+
+            renderizarTabla(filtrados);
+        }
+
+        function renderizarTabla(lista) {
+            const tbody = document.getElementById('tablaPaquetes');
+            if (lista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 30px; color: #6b7280;">No se encontraron paquetes con esos filtros.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = lista.map(p => {
+                const esDudosa = !p.location_name || p.location_name.toLowerCase().includes('revisión') || p.location_name.toLowerCase().includes('manual');
+                const claseLoc = esDudosa ? 'loc-dudosa' : '';
+                const fecha = p.created_at ? new Date(p.created_at).toLocaleString('es-AR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : '-';
+
+                return `
+                    <tr>
+                        <td><strong>${p.tracking_number}</strong></td>
+                        <td>${p.company_name || 'RuPack'}</td>
+                        <td>
+                            <div><strong>${p.recipient_name || '<span style="color:#9ca3af;">Sin nombre</span>'}</strong></div>
+                            <div style="font-size:12px; color:#6b7280;">${p.recipient_address || 'Sin dirección'} ${p.recipient_phone ? '• 📞 ' + p.recipient_phone : ''}</div>
+                        </td>
+                        <td><span class="${claseLoc}">${p.location_name || 'Revisión manual'}</span></td>
+                        <td>${p.zone_name || 'Sin asignar'}</td>
+                        <td>
+                            <div>🚚 <strong>${p.driver_name || 'Sin asignar'}</strong></div>
+                            <div style="font-size:11.5px; color:#6b7280;">Escaneó: ${p.operator_name} (${p.depot_name})</div>
+                        </td>
+                        <td><span class="badge badge-${p.status || 'recibido'}">${(p.status || 'recibido').replace('_', ' ')}</span></td>
+                        <td style="white-space:nowrap; font-size:12.5px; color:#4b5563;">${fecha}</td>
+                        <td>
+                            <button class="btn-edit" onclick="abrirModalEditar(${p.id})">✏️ Modificar</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function abrirModalEditar(id) {
+            const p = paquetesGlobal.find(item => item.id == id);
+            if (!p) return;
+
+            document.getElementById('modalTitulo').innerText = 'Modificar Paquete #' + p.tracking_number;
+            document.getElementById('editId').value = p.id;
+            document.getElementById('editTracking').value = p.tracking_number || '';
+            document.getElementById('editEstado').value = p.status || 'recibido';
+            document.getElementById('editDestinatario').value = p.recipient_name || '';
+            document.getElementById('editTelefono').value = p.recipient_phone || '';
+            document.getElementById('editDireccion').value = p.recipient_address || '';
+            document.getElementById('editLocalidad').value = p.location_name || '';
+            document.getElementById('editZona').value = p.zone_name || '';
+            document.getElementById('editChofer').value = p.driver_name || '';
+            document.getElementById('editObservaciones').value = p.observations || '';
+            
+            document.getElementById('btnEliminar').style.display = 'inline-block';
+            document.getElementById('modalPaquete').style.display = 'flex';
+        }
+
+        function abrirModalNuevo() {
+            document.getElementById('modalTitulo').innerText = 'Cargar Nuevo Paquete Manualmente';
+            document.getElementById('editId').value = '';
+            document.getElementById('editTracking').value = '';
+            document.getElementById('editEstado').value = 'recibido';
+            document.getElementById('editDestinatario').value = '';
+            document.getElementById('editTelefono').value = '';
+            document.getElementById('editDireccion').value = '';
+            document.getElementById('editLocalidad').value = '';
+            document.getElementById('editZona').value = '';
+            document.getElementById('editChofer').value = '';
+            document.getElementById('editObservaciones').value = '';
+
+            document.getElementById('btnEliminar').style.display = 'none';
+            document.getElementById('modalPaquete').style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalPaquete').style.display = 'none';
+        }
+
+        function guardarCambios() {
+            const id = document.getElementById('editId').value;
+            const accion = id ? 'update' : 'create';
+
+            const payload = {
+                id: id,
+                tracking_number: document.getElementById('editTracking').value,
+                status: document.getElementById('editEstado').value,
+                recipient_name: document.getElementById('editDestinatario').value,
+                recipient_phone: document.getElementById('editTelefono').value,
+                recipient_address: document.getElementById('editDireccion').value,
+                location_name: document.getElementById('editLocalidad').value,
+                zone_name: document.getElementById('editZona').value,
+                driver_name: document.getElementById('editChofer').value,
+                observations: document.getElementById('editObservaciones').value
+            };
+
+            fetch(`/api/paquetes.php?action=${accion}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    cerrarModal();
+                    cargarPaquetes();
+                } else {
+                    alert('Error al guardar: ' + res.message);
+                }
+            });
+        }
+
+        function eliminarPaquete() {
+            const id = document.getElementById('editId').value;
+            if (!id || !confirm('¿Seguro que querés eliminar este paquete del sistema?')) return;
+
+            fetch('/api/paquetes.php?action=delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    cerrarModal();
+                    cargarPaquetes();
+                }
+            });
+        }
+
+        function exportarCSV() {
+            if (paquetesGlobal.length === 0) {
+                alert('No hay paquetes para exportar.');
+                return;
+            }
+            const cabeceras = ['Tracking', 'Empresa Origen', 'Destinatario', 'Telefono', 'Direccion', 'Localidad', 'Zona', 'Chofer/Vehiculo', 'Operario Recepcion', 'Estado', 'Fecha Ingreso', 'Observaciones'];
+            const filas = paquetesGlobal.map(p => [
+                p.tracking_number, p.company_name, p.recipient_name, p.recipient_phone, 
+                p.recipient_address, p.location_name, p.zone_name, p.driver_name, 
+                p.operator_name, p.status, p.created_at, p.observations
+            ].map(val => `"${String(val || '').replace(/"/g, '""')}"`).join(';'));
+
+            const csvContent = "\uFEFF" + [cabeceras.join(';'), ...filas].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `RuPack_Reporte_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+        }
+
+        window.onload = cargarPaquetes;
+    </script>
+</body>
+</html>
