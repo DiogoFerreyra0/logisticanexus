@@ -4,26 +4,6 @@ session_start();
 require 'conexion.php';
 header('Content-Type: application/json');
 
-// Asegurar estructura de la tabla shipments y valores por defecto
-try {
-    $pdo->exec("CREATE TABLE IF NOT EXISTS shipments (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        tracking_number VARCHAR(100) NOT NULL,
-        company_id INT DEFAULT 1,
-        current_depot_id INT DEFAULT 1,
-        recipient_name VARCHAR(150) DEFAULT '',
-        recipient_phone VARCHAR(50) DEFAULT '',
-        recipient_address VARCHAR(255) DEFAULT '',
-        location_name VARCHAR(100) DEFAULT 'Revisión manual',
-        zone_name VARCHAR(100) DEFAULT 'Sin asignar',
-        driver_name VARCHAR(150) DEFAULT 'Sin asignar',
-        status VARCHAR(50) DEFAULT 'recibido',
-        observations TEXT,
-        user_id INT DEFAULT 1,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )");
-} catch (Exception $e) {}
-
 $action = $_GET['action'] ?? 'list';
 
 try {
@@ -52,20 +32,16 @@ try {
             exit;
         }
 
-        // Validar que exista al menos una empresa en la tabla companies para evitar el error de clave foránea
+        // Asegurar que la empresa ID 1 exista
         $companyId = !empty($input['company_id']) ? $input['company_id'] : 1;
         $checkComp = $pdo->prepare("SELECT id FROM companies WHERE id = ? LIMIT 1");
         $checkComp->execute([$companyId]);
         if (!$checkComp->fetch()) {
-            // Si no existe, buscamos la primera disponible o insertamos una por defecto
-            $firstComp = $pdo->query("SELECT id FROM companies LIMIT 1")->fetch();
-            if ($firstComp) {
-                $companyId = $firstComp['id'];
-            } else {
-                $pdo->exec("INSERT INTO companies (name) VALUES ('RuPack General')");
-                $companyId = $pdo->lastInsertId();
-            }
+            $pdo->exec("INSERT INTO companies (id, name) VALUES (1, 'RuPack General') ON DUPLICATE KEY UPDATE id=id");
+            $companyId = 1;
         }
+
+        $status = $input['status'] ?? 'recibido';
 
         if ($id) {
             $stmt = $pdo->prepare("
@@ -91,7 +67,7 @@ try {
                 ':location_name' => trim($input['location_name'] ?? 'Revisión manual'),
                 ':zone_name' => trim($input['zone_name'] ?? 'Sin asignar'),
                 ':driver_name' => trim($input['driver_name'] ?? 'Sin asignar'),
-                ':status' => $input['status'] ?? 'recibido',
+                ':status' => $status,
                 ':observations' => trim($input['observations'] ?? ''),
                 ':id' => $id
             ]);
@@ -118,7 +94,7 @@ try {
                 ':location_name' => trim($input['location_name'] ?? 'Revisión manual'),
                 ':zone_name' => trim($input['zone_name'] ?? 'Sin asignar'),
                 ':driver_name' => trim($input['driver_name'] ?? 'Sin asignar'),
-                ':status' => $input['status'] ?? 'recibido',
+                ':status' => $status,
                 ':observations' => trim($input['observations'] ?? ''),
                 ':user_id' => $_SESSION['user_id'] ?? 1
             ]);

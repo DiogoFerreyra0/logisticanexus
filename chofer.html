@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RuPack - App de Choferes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #f3f4f6; color: #1f2937; -webkit-tap-highlight-color: transparent; }
+        
+        .app-container { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #f3f4f6; position: relative; overflow-x: hidden; }
+        
+        /* Header */
+        .header { position: sticky; top: 0; background: #0b2545; color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .header__brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+        .header__logo { background: #f28c28; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-weight: bold; color: white; }
+        .header__profile { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        
+        /* Vistas */
+        .view { padding: 16px; }
+        .view--hidden { display: none; }
+
+        /* Tarjeta de Parada Actual */
+        .stop-card { background: white; border-radius: 14px; border: 2px solid #f28c28; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; }
+        .stop-card__header { background: #0b2545; color: white; padding: 12px 16px; display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; text-transform: uppercase; }
+        .stop-card__body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+        .stop-card__trk { font-family: 'JetBrains Mono', monospace; color: #f28c28; font-weight: 700; font-size: 18px; }
+        .stop-card__client { font-size: 20px; font-weight: 800; line-height: 1.2; color: #0b2545; }
+        .stop-card__address { background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; font-weight: 600; font-size: 14px; line-height: 1.4; }
+        
+        /* Botones */
+        .btn { width: 100%; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; text-decoration: none; }
+        .btn:active { transform: scale(0.98); }
+        .btn--primary { background: #0b2545; color: white; }
+        .btn--success { background: #10b981; color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn--whatsapp { background: #25D366; color: white; margin-bottom: 10px; }
+        .btn--outline { background: transparent; border: 2px solid #d1d5db; color: #374151; }
+
+        /* Lista de Paradas */
+        .stop-list__title { font-size: 17px; font-weight: 800; margin-bottom: 12px; color: #0b2545; }
+        .stop-item { background: white; padding: 14px; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; }
+        .stop-item__badge { background: #fef3c7; width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #92400e; flex-shrink: 0; }
+        .stop-item__info h4 { font-size: 14.5px; margin-bottom: 3px; color: #1f2937; }
+        .stop-item__info p { font-size: 12.5px; color: #6b7280; }
+
+        /* Formulario de Rendición (POD) */
+        .pod-form { display: flex; flex-direction: column; gap: 14px; }
+        .pod-form__group { display: flex; flex-direction: column; gap: 6px; }
+        .pod-form__label { font-size: 13px; font-weight: 700; color: #374151; }
+        .pod-form__input { padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; outline: none; background: white; }
+        .pod-form__input:focus { border-color: #f28c28; }
+        
+        /* Botones de Cámara Nativos */
+        .camera-btn { position: relative; overflow: hidden; background: #fff7ed; border: 2px dashed #f28c28; color: #c2410c; padding: 16px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 14px; cursor: pointer; }
+        .camera-btn input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        
+        .signature-pad { height: 110px; background: white; border: 2px dashed #d1d5db; border-radius: 8px; display: grid; place-items: center; color: #6b7280; font-weight: 600; font-size: 14px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header__brand">
+                <div class="header__logo">R</div> Rupack Chofer
+            </div>
+            <div class="header__profile" id="driverProfileName">
+                Chofer Asignado
+            </div>
+        </header>
+
+        <!-- VISTA 1: RUTA Y PARADAS -->
+        <main id="view-route" class="view">
+            <div id="currentStopContainer">
+                <div style="text-align: center; padding: 40px; color: #6b7280;">Cargando tus paquetes asignados...</div>
+            </div>
+
+            <section style="margin-top: 24px;">
+                <h3 class="stop-list__title">Siguientes paradas en ruta</h3>
+                <div id="nextStopsList">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </section>
+        </main>
+
+        <!-- VISTA 2: RENDICIÓN DE ENTREGA (POD) -->
+        <main id="view-pod" class="view view--hidden">
+            <h2 style="margin-bottom: 4px; font-weight: 800; color: #0b2545;">Confirmar Entrega</h2>
+            <p style="color: #6b7280; margin-bottom: 16px; font-size: 13.5px;">Tracking: <strong id="podTrackingText"></strong></p>
+
+            <form class="pod-form" id="podForm" onsubmit="enviarRendicion(event)">
+                <input type="hidden" id="podShipmentId">
+
+                <div class="pod-form__group">
+                    <label class="pod-form__label">Nombre de quien recibe</label>
+                    <input type="text" id="recName" class="pod-form__input" required placeholder="Ej: Juan Pérez">
+                </div>
+
+                <div class="pod-form__group">
+                    <label class="pod-form__label">DNI del Receptor</label>
+                    <input type="number" id="recDni" class="pod-form__input" required placeholder="Sin puntos">
+                </div>
+
+                <div class="camera-btn">
+                    📸 Tomar Foto del Paquete / Etiqueta
+                    <input type="file" id="fotoPaquete" accept="image/*" capture="environment">
+                </div>
+
+                <div class="camera-btn">
+                    🏠 Tomar Foto de la Fachada / Domicilio
+                    <input type="file" id="fotoFachada" accept="image/*" capture="environment">
+                </div>
+
+                <div class="pod-form__group">
+                    <label class="pod-form__label">Firma del receptor</label>
+                    <div class="signature-pad" id="sigBox" onclick="registrarFirma()">
+                        Toque aquí para registrar firma ✓
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 10px;">
+                    <button type="button" class="btn btn--outline" onclick="toggleView('view-route')">Cancelar</button>
+                    <button type="submit" class="btn btn--success" id="btnSubmitPod">Confirmar Entrega</button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        let paquetesChofer = [];
+        let paqueteActivo = null;
+        let firmaRegistrada = false;
+
+        // Validar sesión o chofer
+        fetch('/api/auth.php?action=check').then(res => res.json()).then(data => {
+            if (data.status !== 'logged_in') {
+                window.location.href = 'acceso-rp.html';
+            } else {
+                document.getElementById('driverProfileName').innerText = data.user.username;
+                cargarRutaChofer(data.user.username);
+            }
+        });
+
+        function cargarRutaChofer(nombreChofer) {
+            fetch(`/api/chofer_entregas.php?action=list&driver=${encodeURIComponent(nombreChofer)}`)
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    paquetesChofer = res.data || [];
+                    renderizarRuta();
+                }
+            });
+        }
+
+        function renderizarRuta() {
+            const currentContainer = document.getElementById('currentStopContainer');
+            const nextList = document.getElementById('nextStopsList');
+
+            // Filtrar solo los paquetes en ruta o pendientes (no entregados)
+            const pendientes = paquetesChofer.filter(p => p.status !== 'entregado');
+
+            if (pendientes.length === 0) {
+                currentContainer.innerHTML = `
+                    <div style="background:white; padding:40px; border-radius:14px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+                        <h3 style="color:#10b981; margin-bottom:8px;">🎉 ¡Ruta Completada!</h3>
+                        <p style="color:#6b7280; font-size:14px;">No tenés más paquetes pendientes de entrega asignados.</p>
+                        <button class="btn btn--primary" style="margin-top:20px;" onclick="location.reload()">🔄 Actualizar Estado</button>
+                    </div>
+                `;
+                nextList.innerHTML = '';
+                return;
+            }
+
+            paqueteActivo = pendientes[0];
+            const resto = pendientes.slice(1);
+
+            // Renderizar Parada Actual
+            currentContainer.innerHTML = `
+                <section class="stop-card">
+                    <div class="stop-card__header">
+                        <span>PARADA ACTUAL (1/${pendientes.length})</span>
+                        <span>Zona: ${paqueteActivo.zone_name || 'General'}</span>
+                    </div>
+                    <div class="stop-card__body">
+                        <div class="stop-card__trk">#${paqueteActivo.tracking_number}</div>
+                        <div class="stop-card__client">${paqueteActivo.recipient_name || 'Cliente sin nombre'}</div>
+                        <div class="stop-card__address">
+                            📍 ${paqueteActivo.location_name || 'Destino general'}<br>
+                            <span style="font-size:13px; color:#64748b; font-weight:500;">${paqueteActivo.recipient_address || 'Sin dirección especificada'}</span>
+                        </div>
+                        <div>
+                            ${paqueteActivo.recipient_phone ? `
+                                <a href="https://wa.me/549${paqueteActivo.recipient_phone.replace(/\D/g,'')}?text=Hola,\%20te\%20hablamos\%20de\%20RuPack\%20por\%20tu\%20envío\%20\%23${paqueteActivo.tracking_number}" target="_blank" class="btn btn--whatsapp">
+                                    💬 Avisar llegada por WhatsApp
+                                </a>
+                            ` : ''}
+                            <button class="btn btn--primary" onclick="abrirPOD(${paqueteActivo.id})">
+                                📦 Registrar Entrega (POD)
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            `;
+
+            // Renderizar Siguientes Paradas
+            if (resto.length === 0) {
+                nextList.innerHTML = `<p style="color:#6b7280; font-size:13.5px;">No hay más paradas en la lista.</p>`;
+            } else {
+                nextList.innerHTML = resto.map((p, idx) => `
+                    <div class="stop-item">
+                        <div class="stop-item__badge">${idx + 2}</div>
+                        <div class="stop-item__info">
+                            <h4>${p.recipient_name || p.tracking_number}</h4>
+                            <p>${p.recipient_address || p.location_name || 'Sin dirección'}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function abrirPOD(id) {
+            const p = paquetesChofer.find(item => item.id == id);
+            if (!p) return;
+
+            document.getElementById('podShipmentId').value = p.id;
+            document.getElementById('podTrackingText').innerText = '#' + p.tracking_number;
+            document.getElementById('recName').value = p.recipient_name || '';
+            document.getElementById('recDni').value = '';
+            firmaRegistrada = false;
+            document.getElementById('sigBox').style.background = 'white';
+            document.getElementById('sigBox').style.color = '#6b7280';
+            document.getElementById('sigBox').innerHTML = 'Toque aquí para registrar firma ✓';
+
+            toggleView('view-pod');
+        }
+
+        function registrarFirma() {
+            firmaRegistrada = true;
+            const box = document.getElementById('sigBox');
+            box.style.background = '#d1fae5';
+            box.style.color = '#065f46';
+            box.innerHTML = 'Firma digital capturada correctamente ✓';
+        }
+
+        function enviarRendicion(e) {
+            e.preventDefault();
+            if (!firmaRegistrada) {
+                alert('Por favor, registrá la firma digital del receptor.');
+                return;
+            }
+
+            const btn = document.getElementById('btnSubmitPod');
+            btn.disabled = true;
+            btn.innerText = 'Guardando entrega...';
+
+            const payload = {
+                id: document.getElementById('podShipmentId').value,
+                recipient_name: document.getElementById('recName').value,
+                recipient_dni: document.getElementById('recDni').value,
+                status: 'entregado'
+            };
+
+            fetch('/api/chofer_entregas.php?action=deliver', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    alert('¡Entrega registrada y sincronizada con éxito!');
+                    toggleView('view-route');
+                    location.reload();
+                } else {
+                    alert('Error al registrar: ' + res.message);
+                }
+            })
+            .catch(err => {
+                alert('Error de conexión con el servidor.');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerText = 'Confirmar Entrega';
+            });
+        }
+
+        function toggleView(targetId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('view--hidden'));
+            document.getElementById(targetId).classList.remove('view--hidden');
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
