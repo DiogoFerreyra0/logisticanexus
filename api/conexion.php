@@ -9,11 +9,11 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // 1. Asegurar que exista el Depósito 1 y la Empresa 1 (evita el error Foreign Key 1452)
+    // 1. Asegurar Depósito y Empresa base
     $pdo->exec("INSERT IGNORE INTO depots (id, name, address) VALUES (1, 'Depósito Central Benavídez', 'Ruta 9 KM 40')");
     $pdo->exec("INSERT IGNORE INTO companies (id, name) VALUES (1, 'RuPack General')");
 
-    // 2. Asegurar que la tabla users permita el rol 'chofer' y tenga los 3 usuarios de prueba listos
+    // 2. Asegurar rol 'chofer' y columnas GPS en tabla users
     try {
         $pdo->exec("ALTER TABLE users MODIFY COLUMN role ENUM('operario','supervisor','admin','chofer') DEFAULT 'operario'");
         $pdo->exec("INSERT IGNORE INTO users (id, depot_id, username, password_hash, role) VALUES 
@@ -23,12 +23,25 @@ try {
         ");
     } catch (Exception $e) {}
 
-    // 3. Asegurar estados y columnas en shipments
+    $colsUsers = [
+        'last_lat' => "DECIMAL(10,7) DEFAULT NULL",
+        'last_lng' => "DECIMAL(10,7) DEFAULT NULL",
+        'last_ping' => "DATETIME DEFAULT NULL"
+    ];
+    foreach ($colsUsers as $col => $def) {
+        try {
+            $pdo->query("SELECT $col FROM users LIMIT 1");
+        } catch (Exception $e) {
+            try { $pdo->exec("ALTER TABLE users ADD COLUMN $col $def"); } catch (Exception $ex) {}
+        }
+    }
+
+    // 3. Asegurar columnas en shipments
     try {
         $pdo->exec("ALTER TABLE shipments MODIFY COLUMN status ENUM('recibido','clasificado','en_ruta','entregado','revision_pendiente','incidencia') DEFAULT 'recibido'");
     } catch (Exception $e) {}
 
-    $columnasExtras = [
+    $colsShipments = [
         'recipient_address' => "VARCHAR(255) DEFAULT ''",
         'zone_name' => "VARCHAR(100) DEFAULT 'Sin asignar'",
         'driver_name' => "VARCHAR(150) DEFAULT 'Sin asignar'",
@@ -36,11 +49,11 @@ try {
         'recipient_dni' => "VARCHAR(30) DEFAULT ''",
         'delivered_at' => "DATETIME DEFAULT NULL"
     ];
-    foreach ($columnasExtras as $col => $definicion) {
+    foreach ($colsShipments as $col => $def) {
         try {
             $pdo->query("SELECT $col FROM shipments LIMIT 1");
         } catch (Exception $e) {
-            try { $pdo->exec("ALTER TABLE shipments ADD COLUMN $col $definicion"); } catch (Exception $ex) {}
+            try { $pdo->exec("ALTER TABLE shipments ADD COLUMN $col $def"); } catch (Exception $ex) {}
         }
     }
 

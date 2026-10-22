@@ -15,12 +15,13 @@
         .header__actions { display: flex; align-items: center; gap: 8px; }
         .header__profile { background: rgba(255,255,255,0.15); padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .btn-salir { color: white; text-decoration: none; font-size: 12px; background: #ef4444; padding: 5px 10px; border-radius: 6px; font-weight: bold; }
+        .gps-bar { background: #dbeafe; color: #1e40af; font-size: 12px; font-weight: 700; padding: 7px 14px; text-align: center; border-bottom: 1px solid #bfdbfe; }
         .view { padding: 16px; }
         .view--hidden { display: none; }
         .stop-card { background: white; border-radius: 14px; border: 2px solid #f28c28; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; }
         .stop-card__header { background: #0b2545; color: white; padding: 12px 16px; display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; text-transform: uppercase; }
         .stop-card__body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-        .stop-card__trk { font-family: 'JetBrains Mono', monospace; color: #f28c28; font-weight: 700; font-size: 18px; }
+        .stop-card__trk { font-family: 'JetBrains Mono', monospace; color: #f28c28; font-weight: 700; font-size: 17px; word-break: break-all; }
         .stop-card__client { font-size: 20px; font-weight: 800; line-height: 1.2; color: #0b2545; }
         .stop-card__address { background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; font-weight: 600; font-size: 14px; line-height: 1.4; }
         .btn { width: 100%; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; text-decoration: none; }
@@ -28,12 +29,13 @@
         .btn--primary { background: #0b2545; color: white; }
         .btn--success { background: #10b981; color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
         .btn--danger { background: #fee2e2; color: #991b1b; margin-top: 8px; font-size: 13.5px; padding: 11px; }
-        .btn--whatsapp { background: #25D366; color: white; margin-bottom: 10px; }
+        .btn--whatsapp { background: #25D366; color: white; margin-bottom: 8px; }
+        .btn--call { background: #3b82f6; color: white; margin-bottom: 10px; padding: 11px; font-size: 14px; }
         .btn--outline { background: transparent; border: 2px solid #d1d5db; color: #374151; }
         .stop-list__title { font-size: 17px; font-weight: 800; margin-bottom: 12px; color: #0b2545; }
         .stop-item { background: white; padding: 14px; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; cursor: pointer; }
         .stop-item__badge { background: #fef3c7; width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #92400e; flex-shrink: 0; }
-        .stop-item__info h4 { font-size: 14.5px; margin-bottom: 3px; color: #1f2937; }
+        .stop-item__info h4 { font-size: 14.5px; margin-bottom: 3px; color: #1f2937; word-break: break-all; }
         .stop-item__info p { font-size: 12.5px; color: #6b7280; }
         .pod-form { display: flex; flex-direction: column; gap: 14px; }
         .pod-form__group { display: flex; flex-direction: column; gap: 6px; }
@@ -55,6 +57,7 @@
                 <a href="acceso-rp.html" class="btn-salir">Salir</a>
             </div>
         </header>
+        <div class="gps-bar" id="gpsStatusText">🛰️ Conectando GPS con el Supervisor...</div>
 
         <!-- VISTA 1: RUTA Y PARADAS -->
         <main id="view-route" class="view">
@@ -86,12 +89,12 @@
                     <input type="number" id="recDni" class="pod-form__input" required placeholder="Sin puntos">
                 </div>
 
-                <div class="camera-btn" id="boxFotoPaquete">
+                <div class="camera-btn">
                     <span id="txtFotoPaquete">📸 Tomar Foto del Paquete / Etiqueta</span>
                     <input type="file" id="fotoPaquete" accept="image/*" capture="environment" onchange="marcarFoto('txtFotoPaquete', '📸 Foto de Paquete Lista ✓')">
                 </div>
 
-                <div class="camera-btn" id="boxFotoFachada">
+                <div class="camera-btn">
                     <span id="txtFotoFachada">🏠 Tomar Foto de la Fachada / Domicilio</span>
                     <input type="file" id="fotoFachada" accept="image/*" capture="environment" onchange="marcarFoto('txtFotoFachada', '🏠 Foto de Fachada Lista ✓')">
                 </div>
@@ -119,6 +122,48 @@
         const userLocal = localStorage.getItem('rup_username') || 'martin.chofer';
         document.getElementById('driverProfileName').innerText = userLocal;
         cargarRutaChofer(userLocal);
+        iniciarRastreoGPS();
+
+        // Rastreo GPS en vivo hacia el panel del supervisor
+        function iniciarRastreoGPS() {
+            if (!("geolocation" in navigator)) {
+                document.getElementById('gpsStatusText').innerText = "⚠️ Este dispositivo no tiene GPS disponible";
+                return;
+            }
+            navigator.geolocation.watchPosition(pos => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                document.getElementById('gpsStatusText').innerText = "🟢 GPS Activo • Ubicación visible para el Supervisor";
+                document.getElementById('gpsStatusText').style.background = "#d1fae5";
+                document.getElementById('gpsStatusText').style.color = "#065f46";
+
+                fetch('/api/chofer_entregas.php?action=ping_gps', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: userLocal, lat: lat, lng: lng })
+                });
+            }, err => {
+                document.getElementById('gpsStatusText').innerText = "⚠️ Activá el permiso de Ubicación para reportar GPS";
+            }, { enableHighAccuracy: true, maximumAge: 15000, timeout: 10000 });
+        }
+
+        function limpiarTracking(raw) {
+            if (!raw) return '-';
+            if (raw.startsWith('{') && raw.includes('"id"')) {
+                const match = raw.match(/"id"\s*:\s*"?(\d+)"?/);
+                if (match) return 'ML-' + match[1];
+            }
+            return raw;
+        }
+
+        // Normaliza teléfonos de Argentina (ej: 011 3780-8783 -> 5491137808783)
+        function formatearWhatsAppAR(telefonoRaw) {
+            let num = (telefonoRaw || '').replace(/\D/g, '');
+            if (!num) return '';
+            if (num.startsWith('0')) num = num.substring(1);
+            if (!num.startsWith('54')) num = '549' + num;
+            return num;
+        }
 
         function cargarRutaChofer(nombreChofer) {
             fetch(`/api/chofer_entregas.php?action=list&driver=${encodeURIComponent(nombreChofer)}`)
@@ -141,6 +186,25 @@
             }
         }
 
+        function cargarTelefonoRapido(id) {
+            const nuevoTel = prompt('Ingresá el número de celular del destinatario (ej: 1137808783):');
+            if (!nuevoTel) return;
+
+            fetch('/api/chofer_entregas.php?action=update_phone', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, recipient_phone: nuevoTel })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    const p = paquetesChofer.find(item => item.id == id);
+                    if (p) p.recipient_phone = nuevoTel;
+                    renderizarRuta();
+                }
+            });
+        }
+
         function renderizarRuta() {
             const currentContainer = document.getElementById('currentStopContainer');
             const nextList = document.getElementById('nextStopsList');
@@ -151,7 +215,6 @@
                         <h3 style="color:#10b981; margin-bottom:8px;">🎉 ¡Sin entregas pendientes!</h3>
                         <p style="color:#6b7280; font-size:14px;">Todos los paquetes fueron entregados o aún no hay paquetes cargados.</p>
                         <button class="btn btn--primary" style="margin-top:20px;" onclick="location.reload()">🔄 Actualizar Ruta</button>
-                        <a href="escaner.html" class="btn btn--outline" style="margin-top:10px;">📷 Ir al Escáner a cargar paquetes</a>
                     </div>
                 `;
                 nextList.innerHTML = '';
@@ -160,8 +223,9 @@
 
             paqueteActivo = paquetesChofer[0];
             const resto = paquetesChofer.slice(1);
-            const telLimpio = (paqueteActivo.recipient_phone || '').replace(/\D/g, '');
-            const msgWa = encodeURIComponent(`Hola, te hablamos de RuPack por tu envío #${paqueteActivo.tracking_number}. Estamos en camino.`);
+            const trkVisual = limpiarTracking(paqueteActivo.tracking_number);
+            const telWa = formatearWhatsAppAR(paqueteActivo.recipient_phone);
+            const msgWa = encodeURIComponent(`Hola ${paqueteActivo.recipient_name || ''}, te hablamos de RuPack Logística por tu envío #${trkVisual}. Estamos en camino a ${paqueteActivo.recipient_address || paqueteActivo.location_name || 'tu domicilio'}.`);
 
             currentContainer.innerHTML = `
                 <section class="stop-card">
@@ -170,18 +234,25 @@
                         <span>${paqueteActivo.zone_name || 'Zona General'}</span>
                     </div>
                     <div class="stop-card__body">
-                        <div class="stop-card__trk">#${paqueteActivo.tracking_number}</div>
-                        <div class="stop-card__client">${paqueteActivo.recipient_name || 'Destinatario General'}</div>
+                        <div class="stop-card__trk">#${trkVisual}</div>
+                        <div class="stop-card__client">${paqueteActivo.recipient_name || 'Destinatario en Etiqueta'}</div>
                         <div class="stop-card__address">
                             📍 <strong>${paqueteActivo.location_name || 'Localidad a confirmar'}</strong><br>
-                            <span style="font-size:13.5px; color:#4b5563;">${paqueteActivo.recipient_address || paqueteActivo.address || 'Dirección según etiqueta'}</span>
+                            <span style="font-size:13.5px; color:#4b5563;">${paqueteActivo.recipient_address || paqueteActivo.address || 'Ver calle en etiqueta física'}</span>
                         </div>
                         <div>
-                            ${telLimpio ? `
-                                <a href="https://wa.me/549${telLimpio}?text=${msgWa}" target="_blank" class="btn btn--whatsapp">
-                                    💬 Avisar llegada por WhatsApp
+                            ${telWa ? `
+                                <a href="https://wa.me/${telWa}?text=${msgWa}" target="_blank" class="btn btn--whatsapp">
+                                    💬 Avisar llegada por WhatsApp (${paqueteActivo.recipient_phone})
                                 </a>
-                            ` : ''}
+                                <a href="tel:${paqueteActivo.recipient_phone}" class="btn btn--call">
+                                    📞 Llamar al Destinatario
+                                </a>
+                            ` : `
+                                <button class="btn btn--whatsapp" style="background:#059669;" onclick="cargarTelefonoRapido(${paqueteActivo.id})">
+                                    ➕ Cargar Teléfono del Cliente para WhatsApp
+                                </button>
+                            `}
                             <button class="btn btn--primary" onclick="abrirPOD(${paqueteActivo.id})">
                                 📦 Registrar Entrega (POD)
                             </button>
@@ -200,7 +271,7 @@
                     <div class="stop-item" onclick="seleccionarParada(${p.id})">
                         <div class="stop-item__badge">${idx + 2}</div>
                         <div class="stop-item__info">
-                            <h4>#${p.tracking_number} - ${p.recipient_name || 'Cliente'}</h4>
+                            <h4>#${limpiarTracking(p.tracking_number)} - ${p.recipient_name || 'Cliente'}</h4>
                             <p>📍 ${p.location_name || ''} (${p.zone_name || 'Sin zona'}) • ${p.recipient_address || 'Ver etiqueta'}</p>
                         </div>
                     </div>
@@ -221,7 +292,7 @@
             if (!p) return;
 
             document.getElementById('podShipmentId').value = p.id;
-            document.getElementById('podTrackingText').innerText = '#' + p.tracking_number;
+            document.getElementById('podTrackingText').innerText = '#' + limpiarTracking(p.tracking_number);
             document.getElementById('recName').value = p.recipient_name || '';
             document.getElementById('recDni').value = '';
             firmaRegistrada = false;
@@ -280,7 +351,7 @@
         }
 
         function reportarIncidencia(id) {
-            const motivo = prompt('Indica el motivo por el cual no se pudo entregar (Ej: Domicilio cerrado, dirección incorrecta):');
+            const motivo = prompt('Indica el motivo por el cual no se pudo entregar (Ej: Domicilio cerrado, nadie atiende):');
             if (!motivo) return;
 
             fetch('/api/chofer_entregas.php?action=deliver', {
