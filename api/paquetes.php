@@ -11,7 +11,7 @@ try {
         $stmt = $pdo->query("
             SELECT 
                 s.*,
-                COALESCE(c.name, 'RuPack / Cliente') as company_name,
+                COALESCE(c.name, 'RuPack General') as company_name,
                 COALESCE(d.name, 'Depósito Central') as depot_name,
                 COALESCE(u.username, 'Operario') as operator_name
             FROM shipments s
@@ -28,29 +28,44 @@ try {
         $tracking = trim($input['tracking_number'] ?? '');
 
         if (empty($tracking)) {
-            echo json_encode(['status' => 'error', 'message' => 'El tracking es obligatorio']);
+            echo json_encode(['status' => 'error', 'message' => 'El número de tracking es obligatorio']);
             exit;
         }
 
-        // Asegurar que la empresa ID 1 exista
-        $companyId = !empty($input['company_id']) ? $input['company_id'] : 1;
-        $checkComp = $pdo->prepare("SELECT id FROM companies WHERE id = ? LIMIT 1");
-        $checkComp->execute([$companyId]);
-        if (!$checkComp->fetch()) {
-            $pdo->exec("INSERT INTO companies (id, name) VALUES (1, 'RuPack General') ON DUPLICATE KEY UPDATE id=id");
-            $companyId = 1;
+        $locName = trim($input['location_name'] ?? 'Revisión manual');
+        $zoneName = trim($input['zone_name'] ?? '');
+
+        // Si no puso zona manual, buscar a qué Cordón pertenece la localidad en la BD
+        if (empty($zoneName) || $zoneName === 'Sin asignar') {
+            $stmtZ = $pdo->prepare("
+                SELECT dz.name as zone_name, l.name as loc_name 
+                FROM locations l 
+                LEFT JOIN delivery_zones dz ON l.zone_id = dz.id 
+                WHERE LOWER(l.name) = LOWER(:loc) LIMIT 1
+            ");
+            $stmtZ->execute([':loc' => $locName]);
+            if ($rowZ = $stmtZ->fetch(PDO::FETCH_ASSOC)) {
+                $zoneName = $rowZ['zone_name'] ?? 'Sin asignar';
+                $locName = $rowZ['loc_name'];
+            } else {
+                $zoneName = 'Sin asignar';
+            }
         }
 
+        $driverName = trim($input['driver_name'] ?? '');
+        if (empty($driverName)) $driverName = 'Sin asignar';
+
         $status = $input['status'] ?? 'recibido';
+        $address = trim($input['recipient_address'] ?? '');
 
         if ($id) {
             $stmt = $pdo->prepare("
                 UPDATE shipments SET
                     tracking_number = :tracking,
-                    company_id = :company_id,
                     recipient_name = :recipient_name,
                     recipient_phone = :recipient_phone,
-                    recipient_address = :recipient_address,
+                    address = :address,
+                    recipient_address = :address,
                     location_name = :location_name,
                     zone_name = :zone_name,
                     driver_name = :driver_name,
@@ -60,13 +75,12 @@ try {
             ");
             $stmt->execute([
                 ':tracking' => $tracking,
-                ':company_id' => $companyId,
                 ':recipient_name' => trim($input['recipient_name'] ?? ''),
                 ':recipient_phone' => trim($input['recipient_phone'] ?? ''),
-                ':recipient_address' => trim($input['recipient_address'] ?? ''),
-                ':location_name' => trim($input['location_name'] ?? 'Revisión manual'),
-                ':zone_name' => trim($input['zone_name'] ?? 'Sin asignar'),
-                ':driver_name' => trim($input['driver_name'] ?? 'Sin asignar'),
+                ':address' => $address,
+                ':location_name' => $locName,
+                ':zone_name' => $zoneName,
+                ':driver_name' => $driverName,
                 ':status' => $status,
                 ':observations' => trim($input['observations'] ?? ''),
                 ':id' => $id
@@ -76,24 +90,32 @@ try {
             $stmt = $pdo->prepare("
                 INSERT INTO shipments (
                     tracking_number, company_id, current_depot_id, recipient_name, 
-                    recipient_phone, recipient_address, location_name, zone_name, 
+                    recipient_phone, address, recipient_address, location_name, zone_name, 
                     driver_name, status, observations, user_id, created_at
                 ) VALUES (
-                    :tracking, :company_id, :depot_id, :recipient_name, 
-                    :recipient_phone, :recipient_address, :location_name, :zone_name, 
+                    :tracking, 1, 1, :recipient_name, 
+                    :recipient_phone, :address, :address, :location_name, :zone_name, 
                     :driver_name, :status, :observations, :user_id, NOW()
                 )
+                ON DUPLICATE KEY UPDATE
+                    recipient_name = VALUES(recipient_name),
+                    recipient_phone = VALUES(recipient_phone),
+                    address = VALUES(address),
+                    recipient_address = VALUES(recipient_address),
+                    location_name = VALUES(location_name),
+                    zone_name = VALUES(zone_name),
+                    driver_name = VALUES(driver_name),
+                    status = VALUES(status),
+                    observations = VALUES(observations)
             ");
             $stmt->execute([
                 ':tracking' => $tracking,
-                ':company_id' => $companyId,
-                ':depot_id' => !empty($input['current_depot_id']) ? $input['current_depot_id'] : 1,
                 ':recipient_name' => trim($input['recipient_name'] ?? ''),
                 ':recipient_phone' => trim($input['recipient_phone'] ?? ''),
-                ':recipient_address' => trim($input['recipient_address'] ?? ''),
-                ':location_name' => trim($input['location_name'] ?? 'Revisión manual'),
-                ':zone_name' => trim($input['zone_name'] ?? 'Sin asignar'),
-                ':driver_name' => trim($input['driver_name'] ?? 'Sin asignar'),
+                ':address' => $address,
+                ':location_name' => $locName,
+                ':zone_name' => $zoneName,
+                ':driver_name' => $driverName,
                 ':status' => $status,
                 ':observations' => trim($input['observations'] ?? ''),
                 ':user_id' => $_SESSION['user_id'] ?? 1

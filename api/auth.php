@@ -2,7 +2,6 @@
 // /api/auth.php
 session_start();
 require 'conexion.php';
-
 header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
@@ -18,23 +17,20 @@ if ($action === 'login') {
     }
 
     try {
-        // Buscamos el usuario en la base de datos
         $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
         $stmt->execute([':username' => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
-            // Verificamos contra la columna password_hash que tenés en phpMyAdmin
-            $dbPass = $user['password_hash'] ?? $user['password'] ?? $user['clave'] ?? '';
-            
-            // Comparamos la contraseña (texto plano o hash)
+            $dbPass = $user['password_hash'] ?? $user['password'] ?? '';
             if ($password === $dbPass || password_verify($password, $dbPass)) {
                 $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = strtolower($user['role'] ?? 'operario');
                 $_SESSION['depot_id'] = $user['depot_id'] ?? 1;
 
                 echo json_encode([
-                    'status' => 'success', 
+                    'status' => 'success',
                     'user' => [
                         'id' => $user['id'],
                         'username' => $user['username'],
@@ -45,25 +41,27 @@ if ($action === 'login') {
                 exit;
             }
         }
-
         echo json_encode(['status' => 'error', 'message' => 'Usuario o contraseña incorrectos']);
     } catch (Exception $e) {
-        echo json_encode(['status' => 'error', 'message' => 'Error en base de datos: ' . $e->getMessage()]);
+        echo json_encode(['status' => 'error', 'message' => 'Error BD: ' . $e->getMessage()]);
     }
-} 
-elseif ($action === 'check') {
+} elseif ($action === 'check') {
     if (isset($_SESSION['user_id'])) {
         echo json_encode([
-            'status' => 'logged_in', 
+            'status' => 'logged_in',
             'user' => [
-                'id' => $_SESSION['user_id'], 
-                'role' => $_SESSION['role'] ?? 'operario', 
+                'id' => $_SESSION['user_id'],
+                'username' => $_SESSION['username'] ?? 'usuario',
+                'role' => $_SESSION['role'] ?? 'operario',
                 'depot_id' => $_SESSION['depot_id'] ?? 1
             ]
         ]);
     } else {
         echo json_encode(['status' => 'not_logged_in']);
     }
+} elseif ($action === 'logout') {
+    session_destroy();
+    echo json_encode(['status' => 'success']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Acción no válida']);
 }

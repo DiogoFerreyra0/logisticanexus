@@ -5,27 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuPack - Acceso</title>
     <style>
-        body { font-family: 'Inter', Arial, sans-serif; background: #0b2545; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-box { background: white; padding: 40px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .login-box img { max-width: 160px; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; outline: none; }
+        body { font-family: 'Inter', Arial, sans-serif; background: #0b2545; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box; }
+        .login-box { background: white; padding: 35px 30px; border-radius: 15px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+        .login-box img { max-width: 150px; margin-bottom: 15px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; outline: none; }
         input:focus { border-color: #f28c28; }
-        button { width: 100%; padding: 12px; background: #f28c28; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
-        button:hover { background: #e07b22; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
+        button.btn-main { width: 100%; padding: 12px; background: #f28c28; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+        button.btn-main:hover { background: #e07b22; }
+        button.btn-main:disabled { background: #ccc; cursor: not-allowed; }
         .error { color: #dc3545; font-size: 13px; margin-top: 15px; display: none; font-weight: bold; background: #f8d7da; padding: 10px; border-radius: 6px; }
+        .quick-roles { margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; text-align: left; font-size: 12px; color: #666; }
+        .quick-roles p { margin: 0 0 8px 0; font-weight: bold; color: #0b2545; text-align: center; }
+        .role-chips { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+        .chip { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 10px; border-radius: 6px; font-size: 11.5px; cursor: pointer; font-weight: 600; color: #0b2545; }
+        .chip:hover { background: #e2e8f0; }
     </style>
 </head>
 <body>
     <div class="login-box">
-        <img src="./img/Logo_rupack.png" alt="RuPack Scan">
-        <h3 style="color: #0b2545; margin-top: 0;">Sistema Operativo</h3>
+        <img src="./img/Logo_rupack.png" alt="RuPack Scan" onerror="this.style.display='none'">
+        <h3 style="color: #0b2545; margin-top: 0; margin-bottom: 15px;">Sistema Operativo RuPack</h3>
         <input type="text" id="user" placeholder="Usuario">
         <input type="password" id="pass" placeholder="Contraseña">
-        <button id="btnLogin" onclick="login()">Ingresar</button>
+        <button id="btnLogin" class="btn-main" onclick="login()">Ingresar</button>
         <div id="error-msg" class="error"></div>
+
+        <div class="quick-roles">
+            <p>⚡ Accesos rápidos para pruebas (Clave: 1234):</p>
+            <div class="role-chips">
+                <span class="chip" onclick="autocompletar('juan.operario','1234')">📷 Operario</span>
+                <span class="chip" onclick="autocompletar('pablo.supervisor','1234')">💻 Supervisor</span>
+                <span class="chip" onclick="autocompletar('martin.chofer','1234')">🚚 Chofer</span>
+            </div>
+        </div>
     </div>
     <script>
+        function autocompletar(u, p) {
+            document.getElementById('user').value = u;
+            document.getElementById('pass').value = p;
+            login();
+        }
+
         function login() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
@@ -53,7 +73,7 @@
                 try {
                     return JSON.parse(text);
                 } catch (e) {
-                    throw new Error('Respuesta inesperada del servidor: ' + text.substring(0, 100));
+                    throw new Error('Error en servidor: ' + text.substring(0, 100));
                 }
             })
             .then(data => {
@@ -62,10 +82,11 @@
                     localStorage.setItem('rup_username', data.user.username);
                     localStorage.setItem('rup_role', data.user.role);
 
-                    // Si es supervisor o admin, va al panel completo; si es operario, al escáner
                     const role = (data.user.role || '').toLowerCase();
-                    if (role === 'supervisor' || role === 'admin' || role === 'administrador' || u.includes('supervisor')) {
+                    if (role === 'supervisor' || role === 'admin' || u.includes('supervisor')) {
                         window.location.href = 'supervisor.html';
+                    } else if (role === 'chofer' || u.includes('chofer')) {
+                        window.location.href = 'chofer.html';
                     } else {
                         window.location.href = 'escaner.html';
                     }

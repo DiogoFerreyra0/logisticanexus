@@ -7,90 +7,284 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; margin: 0; padding: 20px; }
-        #reader { width: 100%; max-width: 500px; margin: 0 auto; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .info-box { background: #fff; margin-top: 20px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: left;}
-        .status-box { background: #333; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-weight: bold; }
-        .status-offline { background: #dc3545; }
-        .status-online { background: #28a745; }
-        .status-ocr { background: #ffc107; color: #333; display: none; padding: 5px; margin-top: 10px; border-radius: 5px; font-size: 14px; font-weight: bold; text-align: center; }
-        h1 { color: #0b2545; font-size: 24px; margin-bottom: 10px; }
-        .data-row { margin-bottom: 8px; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .data-row span { font-weight: bold; color: #f28c28; }
+        * { box-sizing: border-box; font-family: 'Inter', Arial, sans-serif; }
+        body { text-align: center; background-color: #f3f4f6; margin: 0; padding: 0; color: #1f2937; }
+        .topbar { background: #0b2545; color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .topbar h1 { font-size: 18px; margin: 0; }
+        .topbar-links a { color: white; text-decoration: none; font-size: 13px; background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; margin-left: 6px; font-weight: bold; }
+        .container { max-width: 520px; margin: 15px auto; padding: 0 15px 30px; }
+        .status-bar { display: flex; gap: 10px; margin-bottom: 12px; }
+        .status-box { flex: 1; color: white; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 13.5px; }
+        .status-online { background: #10b981; }
+        .status-offline { background: #ef4444; }
+        .btn-sync { background: #f28c28; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; font-size: 13.5px; cursor: pointer; }
+        #reader { width: 100%; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 15px; }
+        .status-ocr { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; display: none; padding: 10px; margin-bottom: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; }
+        .card { background: #fff; margin-top: 12px; padding: 16px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); text-align: left; }
+        .card h3 { margin: 0 0 12px 0; font-size: 15px; color: #0b2545; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .field-row { margin-bottom: 10px; }
+        .field-row label { display: block; font-size: 12px; font-weight: bold; color: #4b5563; margin-bottom: 4px; }
+        .field-row input, .field-row select { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
+        .btn-guardar { width: 100%; background: #0b2545; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 6px; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+        .badge-ok { background: #d1fae5; color: #065f46; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>RuPack Recepción</h1>
-    <div id="conexionStatus" class="status-box status-online">Conexión: ONLINE</div>
-    <div id="colaStatus" style="margin-bottom: 15px; font-weight: bold; color: #666;">Pendientes de subir: 0</div>
-    <div id="reader"></div>
-    <div id="ocrStatus" class="status-ocr">Analizando etiqueta con OCR... ⏳</div>
-    <div class="info-box">
-        <div class="data-row">Tracking: <span id="resTracking">Esperando...</span></div>
-        <div class="data-row">Localidad OCR: <span id="resLocalidad">Esperando...</span></div>
+    <header class="topbar">
+        <h1>📷 RuPack Recepción</h1>
+        <div class="topbar-links">
+            <a href="supervisor.html">Panel</a>
+            <a href="chofer.html">Chofer</a>
+            <a href="acceso-rp.html">Salir</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="status-bar">
+            <div id="conexionStatus" class="status-box status-online">ONLINE</div>
+            <button class="btn-sync" onclick="sincronizar(true)">🔄 Subir Pendientes (<span id="colaCount">0</span>)</button>
+        </div>
+
+        <div id="ocrStatus" class="status-ocr">Analizando etiqueta con OCR... ⏳</div>
+        <div id="reader"></div>
+
+        <!-- Formulario rápido que se autocompleta al escanear (o permite carga directa) -->
+        <div class="card">
+            <h3>📦 Datos del Paquete Escaneado</h3>
+            <div class="field-row">
+                <label>Código de Seguimiento (Tracking)</label>
+                <input type="text" id="inpTracking" placeholder="Escaneá con la cámara o escribí acá...">
+            </div>
+            <div class="field-row">
+                <label>Localidad Detectada (53 Localidades RuPack)</label>
+                <input type="text" id="inpLocalidad" list="listaLocalidades" placeholder="Ej: Tigre, San Isidro, Pilar...">
+                <datalist id="listaLocalidades"></datalist>
+            </div>
+            <div class="field-row">
+                <label>Destinatario / Dirección (Opcional)</label>
+                <input type="text" id="inpDireccion" placeholder="Nombre o calle y altura...">
+            </div>
+            <div class="field-row">
+                <label>¿Asignar directo a Chofer? (Opcional)</label>
+                <select id="inpChofer">
+                    <option value="Sin asignar">Dejar en Depósito (Asignar después)</option>
+                    <option value="martin.chofer">🚚 martin.chofer (En Ruta)</option>
+                </select>
+            </div>
+            <button class="btn-guardar" onclick="confirmarEscaneoManual()">✅ Registrar y Subir a Base de Datos</button>
+        </div>
+
+        <div class="card">
+            <h3>🕒 Últimos Escaneos en este dispositivo</h3>
+            <div id="listaRecientes" style="color:#6b7280; font-size:13px;">Todavía no escaneaste paquetes en esta sesión.</div>
+        </div>
     </div>
 
     <script>
-        fetch('/api/auth.php?action=check').then(res => res.json()).then(data => {
-            if (data.status !== 'logged_in') window.location.href = 'acceso-rp.html';
+        // Las 53 localidades oficiales de la base de datos de RuPack
+        const LOCALIDADES_RUPACK = [
+            "San Martin", "San Andres", "Villa Linch", "Vicente López", "Florida", "La Lucila", "Olivos", "Carapachay", "Florida Oeste", "Munro", "Villa Martelli",
+            "José Leon Suárez", "Villa Ballester", "San Isidro", "Acassuso", "Martínez", "Beccar", "Boulogne Sur Mer", "Villa Adelina", "San Fernando", "Victoria", "Virreyes",
+            "San Miguel", "Bella Vista", "Campo de Mayo", "Muñiz", "Sordeaux", "Los Polvorines", "Villa de Mayo", "Grand Bourg", "Pablo Nogues", "Tortuguitas", "Tigre", "Rincon de Milberg", "El Talar", "Pacheco", "Nordelta", "Ricardo Rojas", "Troncos del Talar", "Benavidez",
+            "José C Paz", "Pilar", "Escobar", "Presidente Derqui", "Villa Rosa", "Dique Lujan", "Garin", "Maschwitz", "Maquinista Savio",
+            "Zarate", "Campana", "Lima", "Los Cardales"
+        ];
+
+        const dl = document.getElementById('listaLocalidades');
+        LOCALIDADES_RUPACK.forEach(loc => {
+            const opt = document.createElement('option');
+            opt.value = loc;
+            dl.appendChild(opt);
         });
 
         let html5QrcodeScanner, db, procesandoOCR = false;
+        let recientes = [];
 
+        // Inicializar IndexedDB y sincronizar pendientes apenas abre la página
         const request = indexedDB.open("RuPackOfflineDB", 2);
-        request.onupgradeneeded = e => { db = e.target.result; if (!db.objectStoreNames.contains("escaneos")) db.createObjectStore("escaneos", { keyPath: "id" }); };
-        request.onsuccess = e => { db = e.target.result; actualizarContador(); };
+        request.onupgradeneeded = e => {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains("escaneos")) {
+                db.createObjectStore("escaneos", { keyPath: "id" });
+            }
+        };
+        request.onsuccess = e => {
+            db = e.target.result;
+            actualizarContador();
+            sincronizar(false); // ¡Sincroniza automáticamente al cargar la página!
+        };
+
+        function normalizarTexto(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+        }
+
+        function detectarLocalidadEnTexto(textoOCR) {
+            const limpio = normalizarTexto(textoOCR || '');
+            for (let loc of LOCALIDADES_RUPACK) {
+                if (limpio.includes(normalizarTexto(loc))) {
+                    return loc;
+                }
+            }
+            return "Revisión manual";
+        }
 
         function onScanSuccess(decodedText) {
             if (procesandoOCR) return;
-            document.getElementById('resTracking').innerText = decodedText;
+            procesandoOCR = true;
+
             if (navigator.vibrate) navigator.vibrate(200);
-            html5QrcodeScanner.pause(true); procesandoOCR = true;
+            document.getElementById('inpTracking').value = decodedText;
             document.getElementById('ocrStatus').style.display = 'block';
 
+            try {
+                if (html5QrcodeScanner) html5QrcodeScanner.pause(true);
+            } catch (e) {}
+
+            // Intentar capturar imagen del video de forma segura sin romper si falla
             const video = document.querySelector('#reader video');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            Tesseract.recognize(canvas.toDataURL('image/png'), 'spa').then(({ data: { text } }) => {
-                const localidades = ["SAN MARTIN", "SAN ANDRES", "FLORIDA", "MUNRO", "SAN ISIDRO", "MARTINEZ", "TIGRE", "PILAR", "ESCOBAR"];
-                let localidad = "Revisión manual";
-                for (let loc of localidades) if (text.toUpperCase().includes(loc)) { localidad = loc; break; }
-                document.getElementById('resLocalidad').innerText = localidad;
-                guardarLocal(decodedText, localidad, text);
-            }).finally(() => {
-                document.getElementById('ocrStatus').style.display = 'none';
-                procesandoOCR = false; setTimeout(() => html5QrcodeScanner.resume(), 1500);
-            });
+            if (video && video.videoWidth > 0) {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    Tesseract.recognize(canvas.toDataURL('image/png'), 'spa')
+                    .then(({ data: { text } }) => {
+                        const loc = detectarLocalidadEnTexto(text);
+                        document.getElementById('inpLocalidad').value = loc;
+                        guardarLocal(decodedText, loc, text.substring(0, 80));
+                    })
+                    .catch(() => {
+                        guardarLocal(decodedText, document.getElementById('inpLocalidad').value || 'Revisión manual', 'Escaneo rápido');
+                    })
+                    .finally(() => finalizarCicloEscaneo());
+                } catch (err) {
+                    guardarLocal(decodedText, document.getElementById('inpLocalidad').value || 'Revisión manual', 'Escaneo directo');
+                    finalizarCicloEscaneo();
+                }
+            } else {
+                // Si escaneó desde un archivo de imagen o sin video activo, guarda directo sin colgarse
+                guardarLocal(decodedText, document.getElementById('inpLocalidad').value || 'Revisión manual', 'Escaneo por imagen');
+                finalizarCicloEscaneo();
+            }
         }
 
-        function guardarLocal(tracking, localidad, texto) {
+        function finalizarCicloEscaneo() {
+            document.getElementById('ocrStatus').style.display = 'none';
+            procesandoOCR = false;
+            setTimeout(() => {
+                try { if (html5QrcodeScanner) html5QrcodeScanner.resume(); } catch (e) {}
+            }, 1500);
+        }
+
+        function confirmarEscaneoManual() {
+            const trk = document.getElementById('inpTracking').value.trim();
+            if (!trk) {
+                alert('Ingresá o escaneá un código de seguimiento primero.');
+                return;
+            }
+            const loc = document.getElementById('inpLocalidad').value.trim() || 'Revisión manual';
+            const dir = document.getElementById('inpDireccion').value.trim();
+            const chofer = document.getElementById('inpChofer').value;
+
+            guardarLocal(trk, loc, 'Carga en recepción', dir, chofer);
+            document.getElementById('inpTracking').value = '';
+            document.getElementById('inpDireccion').value = '';
+        }
+
+        function guardarLocal(tracking, localidad, texto, direccion = '', chofer = 'Sin asignar') {
+            if (!db) return;
+            const nuevo = {
+                id: Date.now().toString() + Math.random().toString(36).substring(2, 5),
+                tracking_number: tracking,
+                company_id: 1,
+                current_depot_id: localStorage.getItem('rup_depot_id') || 1,
+                location_name: localidad,
+                recipient_address: direccion,
+                driver_name: chofer,
+                observations: texto,
+                fecha: new Date().toISOString()
+            };
+
             const tx = db.transaction(["escaneos"], "readwrite");
-            tx.objectStore("escaneos").add({
-                id: Date.now().toString(), tracking_number: tracking, company_id: 1, 
-                current_depot_id: localStorage.getItem('rup_depot_id') || 1, location_name: localidad,
-                observations: texto.substring(0, 50), fecha: new Date().toISOString()
-            });
-            tx.oncomplete = () => { actualizarContador(); if (navigator.onLine) sincronizar(); };
-        }
-
-        function sincronizar() {
-            if (!navigator.onLine) return;
-            const req = db.transaction(["escaneos"], "readonly").objectStore("escaneos").getAll();
-            req.onsuccess = () => {
-                if (req.result.length === 0) return;
-                fetch('/api/sincronizar.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(req.result) })
-                .then(r => r.json()).then(d => { if (d.status === 'success') db.transaction(["escaneos"], "readwrite").objectStore("escaneos").clear().oncomplete = actualizarContador; });
+            tx.objectStore("escaneos").add(nuevo);
+            tx.oncomplete = () => {
+                agregarARecientes(tracking, localidad);
+                actualizarContador();
+                sincronizar(false);
             };
         }
 
-        function actualizarContador() { db.transaction(["escaneos"]).objectStore("escaneos").count().onsuccess = e => document.getElementById('colaStatus').innerText = "Pendientes de subir: " + e.target.result; }
+        function agregarARecientes(tracking, localidad) {
+            recientes.unshift({ tracking, localidad, hora: new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'}) });
+            const cont = document.getElementById('listaRecientes');
+            cont.innerHTML = recientes.slice(0, 6).map(r => `
+                <div class="history-item">
+                    <span><strong>#${r.tracking}</strong> • ${r.localidad}</span>
+                    <span class="badge-ok">${r.hora}</span>
+                </div>
+            `).join('');
+        }
 
-        window.addEventListener('online', () => { document.getElementById('conexionStatus').className = "status-box status-online"; document.getElementById('conexionStatus').innerText = "Conexión: ONLINE"; sincronizar(); });
-        window.addEventListener('offline', () => { document.getElementById('conexionStatus').className = "status-box status-offline"; document.getElementById('conexionStatus').innerText = "Conexión: OFFLINE"; });
+        function sincronizar(mostrarAlerta) {
+            if (!db || !navigator.onLine) return;
+            const req = db.transaction(["escaneos"], "readonly").objectStore("escaneos").getAll();
+            req.onsuccess = () => {
+                const pendientes = req.result || [];
+                if (pendientes.length === 0) {
+                    if (mostrarAlerta) alert('¡Todo está sincronizado! No hay paquetes pendientes de subir.');
+                    return;
+                }
 
-        window.onload = () => { html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 150} }, false); html5QrcodeScanner.render(onScanSuccess, () => {}); };
+                fetch('/api/sincronizar.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pendientes)
+                })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.status === 'success') {
+                        const clearTx = db.transaction(["escaneos"], "readwrite");
+                        clearTx.objectStore("escaneos").clear();
+                        clearTx.oncomplete = () => {
+                            actualizarContador();
+                            if (mostrarAlerta) alert(`¡Se subieron ${d.procesados} paquetes a la base de datos correctamente!`);
+                        };
+                    } else if (mostrarAlerta) {
+                        alert('Error al sincronizar: ' + d.message);
+                    }
+                })
+                .catch(err => {
+                    if (mostrarAlerta) alert('Error de red al intentar subir.');
+                });
+            };
+        }
+
+        function actualizarContador() {
+            if (!db) return;
+            db.transaction(["escaneos"]).objectStore("escaneos").count().onsuccess = e => {
+                document.getElementById('colaCount').innerText = e.target.result;
+            };
+        }
+
+        window.addEventListener('online', () => {
+            document.getElementById('conexionStatus').className = "status-box status-online";
+            document.getElementById('conexionStatus').innerText = "ONLINE";
+            sincronizar(false);
+        });
+        window.addEventListener('offline', () => {
+            document.getElementById('conexionStatus').className = "status-box status-offline";
+            document.getElementById('conexionStatus').innerText = "OFFLINE (Guardando en celu)";
+        });
+
+        window.onload = () => {
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 150} }, false);
+            html5QrcodeScanner.render(onScanSuccess, () => {});
+            // Reintentar sincronización automática cada 10 segundos
+            setInterval(() => sincronizar(false), 10000);
+        };
     </script>
 </body>
 </html>

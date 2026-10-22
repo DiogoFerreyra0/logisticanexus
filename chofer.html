@@ -8,66 +8,51 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: #f3f4f6; color: #1f2937; -webkit-tap-highlight-color: transparent; }
-        
         .app-container { max-width: 480px; margin: 0 auto; min-height: 100vh; background: #f3f4f6; position: relative; overflow-x: hidden; }
-        
-        /* Header */
-        .header { position: sticky; top: 0; background: #0b2545; color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .header__brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
-        .header__logo { background: #f28c28; width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-weight: bold; color: white; }
-        .header__profile { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
-        
-        /* Vistas */
+        .header { position: sticky; top: 0; background: #0b2545; color: white; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .header__brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; }
+        .header__logo { background: #f28c28; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-weight: bold; color: white; }
+        .header__actions { display: flex; align-items: center; gap: 8px; }
+        .header__profile { background: rgba(255,255,255,0.15); padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .btn-salir { color: white; text-decoration: none; font-size: 12px; background: #ef4444; padding: 5px 10px; border-radius: 6px; font-weight: bold; }
         .view { padding: 16px; }
         .view--hidden { display: none; }
-
-        /* Tarjeta de Parada Actual */
         .stop-card { background: white; border-radius: 14px; border: 2px solid #f28c28; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 24px; }
         .stop-card__header { background: #0b2545; color: white; padding: 12px 16px; display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; text-transform: uppercase; }
         .stop-card__body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
         .stop-card__trk { font-family: 'JetBrains Mono', monospace; color: #f28c28; font-weight: 700; font-size: 18px; }
         .stop-card__client { font-size: 20px; font-weight: 800; line-height: 1.2; color: #0b2545; }
         .stop-card__address { background: #f9fafb; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; font-weight: 600; font-size: 14px; line-height: 1.4; }
-        
-        /* Botones */
         .btn { width: 100%; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; text-decoration: none; }
         .btn:active { transform: scale(0.98); }
         .btn--primary { background: #0b2545; color: white; }
         .btn--success { background: #10b981; color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn--danger { background: #fee2e2; color: #991b1b; margin-top: 8px; font-size: 13.5px; padding: 11px; }
         .btn--whatsapp { background: #25D366; color: white; margin-bottom: 10px; }
         .btn--outline { background: transparent; border: 2px solid #d1d5db; color: #374151; }
-
-        /* Lista de Paradas */
         .stop-list__title { font-size: 17px; font-weight: 800; margin-bottom: 12px; color: #0b2545; }
-        .stop-item { background: white; padding: 14px; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; }
+        .stop-item { background: white; padding: 14px; border-radius: 12px; border: 1px solid #e5e7eb; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; cursor: pointer; }
         .stop-item__badge { background: #fef3c7; width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #92400e; flex-shrink: 0; }
         .stop-item__info h4 { font-size: 14.5px; margin-bottom: 3px; color: #1f2937; }
         .stop-item__info p { font-size: 12.5px; color: #6b7280; }
-
-        /* Formulario de Rendición (POD) */
         .pod-form { display: flex; flex-direction: column; gap: 14px; }
         .pod-form__group { display: flex; flex-direction: column; gap: 6px; }
         .pod-form__label { font-size: 13px; font-weight: 700; color: #374151; }
         .pod-form__input { padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 15px; font-family: inherit; outline: none; background: white; }
-        .pod-form__input:focus { border-color: #f28c28; }
-        
-        /* Botones de Cámara Nativos */
         .camera-btn { position: relative; overflow: hidden; background: #fff7ed; border: 2px dashed #f28c28; color: #c2410c; padding: 16px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 14px; cursor: pointer; }
         .camera-btn input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        
         .signature-pad { height: 110px; background: white; border: 2px dashed #d1d5db; border-radius: 8px; display: grid; place-items: center; color: #6b7280; font-weight: 600; font-size: 14px; cursor: pointer; }
     </style>
 </head>
 <body>
-
     <div class="app-container">
-        <!-- Header -->
         <header class="header">
             <div class="header__brand">
                 <div class="header__logo">R</div> Rupack Chofer
             </div>
-            <div class="header__profile" id="driverProfileName">
-                Chofer Asignado
+            <div class="header__actions">
+                <div class="header__profile" id="driverProfileName">Chofer</div>
+                <a href="acceso-rp.html" class="btn-salir">Salir</a>
             </div>
         </header>
 
@@ -78,10 +63,8 @@
             </div>
 
             <section style="margin-top: 24px;">
-                <h3 class="stop-list__title">Siguientes paradas en ruta</h3>
-                <div id="nextStopsList">
-                    <!-- Se llena dinámicamente -->
-                </div>
+                <h3 class="stop-list__title">Siguientes paradas en ruta (Tocá una para elegirla)</h3>
+                <div id="nextStopsList"></div>
             </section>
         </main>
 
@@ -94,7 +77,7 @@
                 <input type="hidden" id="podShipmentId">
 
                 <div class="pod-form__group">
-                    <label class="pod-form__label">Nombre de quien recibe</label>
+                    <label class="pod-form__label">Nombre y Apellido de quien recibe</label>
                     <input type="text" id="recName" class="pod-form__input" required placeholder="Ej: Juan Pérez">
                 </div>
 
@@ -103,14 +86,14 @@
                     <input type="number" id="recDni" class="pod-form__input" required placeholder="Sin puntos">
                 </div>
 
-                <div class="camera-btn">
-                    📸 Tomar Foto del Paquete / Etiqueta
-                    <input type="file" id="fotoPaquete" accept="image/*" capture="environment">
+                <div class="camera-btn" id="boxFotoPaquete">
+                    <span id="txtFotoPaquete">📸 Tomar Foto del Paquete / Etiqueta</span>
+                    <input type="file" id="fotoPaquete" accept="image/*" capture="environment" onchange="marcarFoto('txtFotoPaquete', '📸 Foto de Paquete Lista ✓')">
                 </div>
 
-                <div class="camera-btn">
-                    🏠 Tomar Foto de la Fachada / Domicilio
-                    <input type="file" id="fotoFachada" accept="image/*" capture="environment">
+                <div class="camera-btn" id="boxFotoFachada">
+                    <span id="txtFotoFachada">🏠 Tomar Foto de la Fachada / Domicilio</span>
+                    <input type="file" id="fotoFachada" accept="image/*" capture="environment" onchange="marcarFoto('txtFotoFachada', '🏠 Foto de Fachada Lista ✓')">
                 </div>
 
                 <div class="pod-form__group">
@@ -133,91 +116,104 @@
         let paqueteActivo = null;
         let firmaRegistrada = false;
 
-        // Validar sesión o chofer
-        fetch('/api/auth.php?action=check').then(res => res.json()).then(data => {
-            if (data.status !== 'logged_in') {
-                window.location.href = 'acceso-rp.html';
-            } else {
-                document.getElementById('driverProfileName').innerText = data.user.username;
-                cargarRutaChofer(data.user.username);
-            }
-        });
+        const userLocal = localStorage.getItem('rup_username') || 'martin.chofer';
+        document.getElementById('driverProfileName').innerText = userLocal;
+        cargarRutaChofer(userLocal);
 
         function cargarRutaChofer(nombreChofer) {
             fetch(`/api/chofer_entregas.php?action=list&driver=${encodeURIComponent(nombreChofer)}`)
             .then(r => r.json())
             .then(res => {
                 if (res.status === 'success') {
-                    paquetesChofer = res.data || [];
+                    paquetesChofer = (res.data || []).filter(p => p.status !== 'entregado' && p.status !== 'incidencia');
                     renderizarRuta();
                 }
             });
+        }
+
+        function seleccionarParada(id) {
+            const idx = paquetesChofer.findIndex(p => p.id == id);
+            if (idx > 0) {
+                const elegido = paquetesChofer.splice(idx, 1)[0];
+                paquetesChofer.unshift(elegido);
+                renderizarRuta();
+                window.scrollTo(0, 0);
+            }
         }
 
         function renderizarRuta() {
             const currentContainer = document.getElementById('currentStopContainer');
             const nextList = document.getElementById('nextStopsList');
 
-            // Filtrar solo los paquetes en ruta o pendientes (no entregados)
-            const pendientes = paquetesChofer.filter(p => p.status !== 'entregado');
-
-            if (pendientes.length === 0) {
+            if (paquetesChofer.length === 0) {
                 currentContainer.innerHTML = `
-                    <div style="background:white; padding:40px; border-radius:14px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
-                        <h3 style="color:#10b981; margin-bottom:8px;">🎉 ¡Ruta Completada!</h3>
-                        <p style="color:#6b7280; font-size:14px;">No tenés más paquetes pendientes de entrega asignados.</p>
-                        <button class="btn btn--primary" style="margin-top:20px;" onclick="location.reload()">🔄 Actualizar Estado</button>
+                    <div style="background:white; padding:35px 25px; border-radius:14px; text-align:center; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
+                        <h3 style="color:#10b981; margin-bottom:8px;">🎉 ¡Sin entregas pendientes!</h3>
+                        <p style="color:#6b7280; font-size:14px;">Todos los paquetes fueron entregados o aún no hay paquetes cargados.</p>
+                        <button class="btn btn--primary" style="margin-top:20px;" onclick="location.reload()">🔄 Actualizar Ruta</button>
+                        <a href="escaner.html" class="btn btn--outline" style="margin-top:10px;">📷 Ir al Escáner a cargar paquetes</a>
                     </div>
                 `;
                 nextList.innerHTML = '';
                 return;
             }
 
-            paqueteActivo = pendientes[0];
-            const resto = pendientes.slice(1);
+            paqueteActivo = paquetesChofer[0];
+            const resto = paquetesChofer.slice(1);
+            const telLimpio = (paqueteActivo.recipient_phone || '').replace(/\D/g, '');
+            const msgWa = encodeURIComponent(`Hola, te hablamos de RuPack por tu envío #${paqueteActivo.tracking_number}. Estamos en camino.`);
 
-            // Renderizar Parada Actual
             currentContainer.innerHTML = `
                 <section class="stop-card">
                     <div class="stop-card__header">
-                        <span>PARADA ACTUAL (1/${pendientes.length})</span>
-                        <span>Zona: ${paqueteActivo.zone_name || 'General'}</span>
+                        <span>PARADA ACTUAL (1/${paquetesChofer.length})</span>
+                        <span>${paqueteActivo.zone_name || 'Zona General'}</span>
                     </div>
                     <div class="stop-card__body">
                         <div class="stop-card__trk">#${paqueteActivo.tracking_number}</div>
-                        <div class="stop-card__client">${paqueteActivo.recipient_name || 'Cliente sin nombre'}</div>
+                        <div class="stop-card__client">${paqueteActivo.recipient_name || 'Destinatario General'}</div>
                         <div class="stop-card__address">
-                            📍 ${paqueteActivo.location_name || 'Destino general'}<br>
-                            <span style="font-size:13px; color:#64748b; font-weight:500;">${paqueteActivo.recipient_address || 'Sin dirección especificada'}</span>
+                            📍 <strong>${paqueteActivo.location_name || 'Localidad a confirmar'}</strong><br>
+                            <span style="font-size:13.5px; color:#4b5563;">${paqueteActivo.recipient_address || paqueteActivo.address || 'Dirección según etiqueta'}</span>
                         </div>
                         <div>
-                            ${paqueteActivo.recipient_phone ? `
-                                <a href="https://wa.me/549${paqueteActivo.recipient_phone.replace(/\D/g,'')}?text=Hola,\%20te\%20hablamos\%20de\%20RuPack\%20por\%20tu\%20envío\%20\%23${paqueteActivo.tracking_number}" target="_blank" class="btn btn--whatsapp">
+                            ${telLimpio ? `
+                                <a href="https://wa.me/549${telLimpio}?text=${msgWa}" target="_blank" class="btn btn--whatsapp">
                                     💬 Avisar llegada por WhatsApp
                                 </a>
                             ` : ''}
                             <button class="btn btn--primary" onclick="abrirPOD(${paqueteActivo.id})">
                                 📦 Registrar Entrega (POD)
                             </button>
+                            <button class="btn btn--danger" onclick="reportarIncidencia(${paqueteActivo.id})">
+                                ⚠️ Reportar No Entregado / Incidencia
+                            </button>
                         </div>
                     </div>
                 </section>
             `;
 
-            // Renderizar Siguientes Paradas
             if (resto.length === 0) {
-                nextList.innerHTML = `<p style="color:#6b7280; font-size:13.5px;">No hay más paradas en la lista.</p>`;
+                nextList.innerHTML = `<p style="color:#6b7280; font-size:13.5px;">Esta es tu última parada pendiente.</p>`;
             } else {
                 nextList.innerHTML = resto.map((p, idx) => `
-                    <div class="stop-item">
+                    <div class="stop-item" onclick="seleccionarParada(${p.id})">
                         <div class="stop-item__badge">${idx + 2}</div>
                         <div class="stop-item__info">
-                            <h4>${p.recipient_name || p.tracking_number}</h4>
-                            <p>${p.recipient_address || p.location_name || 'Sin dirección'}</p>
+                            <h4>#${p.tracking_number} - ${p.recipient_name || 'Cliente'}</h4>
+                            <p>📍 ${p.location_name || ''} (${p.zone_name || 'Sin zona'}) • ${p.recipient_address || 'Ver etiqueta'}</p>
                         </div>
                     </div>
                 `).join('');
             }
+        }
+
+        function marcarFoto(idSpan, texto) {
+            const el = document.getElementById(idSpan);
+            el.innerText = texto;
+            el.parentElement.style.background = '#d1fae5';
+            el.parentElement.style.borderColor = '#10b981';
+            el.parentElement.style.color = '#065f46';
         }
 
         function abrirPOD(id) {
@@ -247,7 +243,7 @@
         function enviarRendicion(e) {
             e.preventDefault();
             if (!firmaRegistrada) {
-                alert('Por favor, registrá la firma digital del receptor.');
+                alert('Por favor, tocá el recuadro de firma para confirmar.');
                 return;
             }
 
@@ -270,19 +266,34 @@
             .then(r => r.json())
             .then(res => {
                 if (res.status === 'success') {
-                    alert('¡Entrega registrada y sincronizada con éxito!');
+                    alert('✅ ¡Entrega confirmada y actualizada en el Panel del Supervisor!');
                     toggleView('view-route');
-                    location.reload();
+                    cargarRutaChofer(userLocal);
                 } else {
                     alert('Error al registrar: ' + res.message);
                 }
             })
-            .catch(err => {
-                alert('Error de conexión con el servidor.');
-            })
             .finally(() => {
                 btn.disabled = false;
                 btn.innerText = 'Confirmar Entrega';
+            });
+        }
+
+        function reportarIncidencia(id) {
+            const motivo = prompt('Indica el motivo por el cual no se pudo entregar (Ej: Domicilio cerrado, dirección incorrecta):');
+            if (!motivo) return;
+
+            fetch('/api/chofer_entregas.php?action=deliver', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, status: 'incidencia', notes: motivo })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    alert('⚠️ Incidencia registrada en el sistema.');
+                    cargarRutaChofer(userLocal);
+                }
             });
         }
 
